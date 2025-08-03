@@ -3,6 +3,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import readline from 'readline';
 
+// 1) How we invoke Vite
 const cmd  = 'pnpm';
 const args = ['exec','vite','--clearScreen=false'];
 
@@ -12,34 +13,49 @@ const vite = spawn(cmd, args, {
     stdio: ['inherit','pipe','pipe'],
 });
 
-// Matches: C:\foo\bar.ts:12:34   or   ./src/baz.ts:5:6   or   /usr/src/qux.ts:7:8
-const fileRegex = /(([A-Za-z]:[\\/][^\s:]+|\.[\\/][^\s:]+|\/[^\s:]+)):(\d+):(\d+)/g;
+// 2) Match Windows (drive:\path), relative (./src/…), or POSIX (/src/…)
+//    with line mandatory and column optional
+const fileRegex = /FILE\s+(([A-Za-z]:[\\/][^\s:]+|\.[\\/][^\s:]+|\/[^\s:]+)):(\d+)(?::(\d+))?/g;
 
+// Strip ANSI colors so we don’t break the link escapes
 function stripAnsi(s) {
     return s.replace(/\x1B\[[0-9;]*[A-Za-z]/g, '');
 }
 
+// 3) Wrap every match in an OSC8 hyperlink
 function linkify(raw) {
-    // remove colors
     const line = stripAnsi(raw);
-    // wrap every match in an OSC8 hyperlink
-    return line.replace(fileRegex, (_, filePath, __, ___, lineNum, colNum) => {
-        // resolve to absolute and normalize slashes
-        const abs = path.resolve(filePath).replace(/\\/g, '/');
-        const uri = `file:///${abs}:${lineNum}:${colNum}`;
-        const OSC = '\u001b]8;;';
-        const ST  = '\u001b\\';
-        const text = `${filePath}:${lineNum}:${colNum}`;
-        return `${OSC}${uri}${ST}${text}${OSC}${ST}`;
-    });
+    return line.replace(
+        fileRegex,
+        (_match, filePath, _2, _3, lineNum, colNum) => {
+            // Absolute, normalized path
+            const abs = path.resolve(filePath).replace(/\\/g, '/');
+            // Column is optional
+            const loc = colNum ? `${abs}:${lineNum}:${colNum}` : `${abs}:${lineNum}`;
+            const uri = `file:///${loc}`;
+            const OSC = '\u001b]8;;';
+            const ST  = '\u001b\\';
+            const blue  = '\u001b[34m';
+            const reset = '\u001b[39m';
+            // Show exactly what was in the raw output
+            const text = colNum
+                ? `${blue}FILE: ${filePath}:${lineNum}:${colNum}${reset}`
+                : `${blue}FILE: ${filePath}:${lineNum}${reset}`;
+
+            // console.log(`URI:TEXT = ${uri}:${text}`);
+            return `${blue}${OSC}${uri}${ST}${text}${OSC}${ST}${reset}`;
+        }
+    );
 }
 
-// pipe stdout → linkify → stdout
-readline.createInterface({ input: vite.stdout })
-    .on('line', l => console.log(linkify(l)));
+// 4) Always print stdout through linkify
+readline
+    .createInterface({ input: vite.stdout })
+    .on('line', (l) => console.log(linkify(l)));
 
-// pipe stderr → linkify → stderr
-readline.createInterface({ input: vite.stderr })
-    .on('line', l => console.error(linkify(l)));
+// 5) And stderr too
+readline
+    .createInterface({ input: vite.stderr })
+    .on('line', (l) => console.error(linkify(l)));
 
-vite.on('close', code => process.exit(code));
+vite.on('close', (code) => process.exit(code));
