@@ -1,0 +1,7 @@
+mutation Login($username: String!, $password: String!) {
+    authlogin(username: $username, password: $password) {
+        token
+        expiresAt
+    }
+}
+
