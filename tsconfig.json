@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    /* Target & JSX */
+    "target": "ESNext",
+    "jsx": "react-jsx",
+
+    /* Modules */
+    "module": "ESNext",
+    "moduleResolution": "Node",
+
+    /* Strictness */
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    /* Imports */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    /* Libs */
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+
+    /* Interop */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* JSON, Node types */
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+
+    /* provide types for Vite env and Vitest globals */
+    "types": ["vite/client", "vitest/globals", "node"]
+  },
+
+  "include": [
+    "src",                   /* your application code */
+    "src/test",              /* if you keep tests here */
+    "vite.config.ts",        /* for checker plugin */
+    "vitest.config.ts"       /* for Vitest auto-complete */
+  ],
+
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
