@@ -1,3 +1,4 @@
+/* eslint-disable camelcase,@typescript-eslint/naming-convention */
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -15,8 +16,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
-  Long: { input: any; output: any; }
+  DateTime: { input: string; output: string; }
+  Long: { input: number; output: number; }
 };
 
 export type Mutation = {
@@ -154,14 +155,14 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', authlogin?: { __typename?: 'TokenResponse', token?: string | null, expiresAt?: any | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', authlogin?: { __typename?: 'TokenResponse', token?: string | null, expiresAt?: number | null } | null };
 
 export type GetUserQueryVariables = Exact<{
   id: Scalars['Long']['input'];
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, createdAt?: any | null, updatedAt?: any | null, lastLoginAt?: any | null, roles?: Array<Role | null> | null } | null };
+export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null, roles?: Array<Role | null> | null } | null };
 
 export type ListUsersQueryVariables = Exact<{
   page: Scalars['Int']['input'];
@@ -299,3 +300,14 @@ export type ListUsersQueryHookResult = ReturnType<typeof useListUsersQuery>;
 export type ListUsersLazyQueryHookResult = ReturnType<typeof useListUsersLazyQuery>;
 export type ListUsersSuspenseQueryHookResult = ReturnType<typeof useListUsersSuspenseQuery>;
 export type ListUsersQueryResult = Apollo.QueryResult<ListUsersQuery, ListUsersQueryVariables>;
+
+      export interface PossibleTypesResultData {
+        possibleTypes: {
+          [key: string]: string[]
+        }
+      }
+      const result: PossibleTypesResultData = {
+  "possibleTypes": {}
+};
+      export default result;
+    
