@@ -1,4 +1,3 @@
-/* eslint-disable camelcase,@typescript-eslint/naming-convention */
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -20,6 +19,13 @@ export type Scalars = {
   Long: { input: number; output: number; }
 };
 
+export type CreateUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<Array<InputMaybe<Role>>>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   authlogin?: Maybe<TokenResponse>;
@@ -38,7 +44,7 @@ export type MutationAuthloginArgs = {
 
 
 export type MutationCreateUserArgs = {
-  input?: InputMaybe<Scalars['String']['input']>;
+  input?: InputMaybe<CreateUserInput>;
 };
 
 
@@ -60,7 +66,7 @@ export type MutationImportVideosByPublisherArgs = {
 
 
 export type MutationUpdateUserArgs = {
-  input?: InputMaybe<Scalars['String']['input']>;
+  input?: InputMaybe<UpdateUserInput>;
 };
 
 export type Query = {
@@ -82,14 +88,22 @@ export type QueryUsersArgs = {
 };
 
 export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER'
+  Admin = 'ADMIN',
+  User = 'USER'
 }
 
 export type TokenResponse = {
   __typename?: 'TokenResponse';
   expiresAt?: Maybe<Scalars['Long']['output']>;
   token?: Maybe<Scalars['String']['output']>;
+};
+
+export type UpdateUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
+  roles?: InputMaybe<Array<InputMaybe<Role>>>;
+  status?: InputMaybe<UserStatus>;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UserResponse = {
@@ -105,34 +119,34 @@ export type UserResponse = {
 };
 
 export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  DEACTIVATED = 'DEACTIVATED',
-  LOCKED = 'LOCKED',
-  PENDING = 'PENDING',
-  SUSPENDED = 'SUSPENDED'
+  Active = 'ACTIVE',
+  Deactivated = 'DEACTIVATED',
+  Locked = 'LOCKED',
+  Pending = 'PENDING',
+  Suspended = 'SUSPENDED'
 }
 
 export enum VideoCategory {
-  BUSINESS = 'BUSINESS',
-  EDUCATION = 'EDUCATION',
-  ENTERTAINMENT = 'ENTERTAINMENT',
-  GAMING = 'GAMING',
-  GENERAL = 'GENERAL',
-  MUSIC = 'MUSIC',
-  NEWS = 'NEWS',
-  OTHER = 'OTHER',
-  SPORTS = 'SPORTS',
-  TECHNOLOGY = 'TECHNOLOGY',
-  UNSPECIFIED = 'UNSPECIFIED'
+  Business = 'BUSINESS',
+  Education = 'EDUCATION',
+  Entertainment = 'ENTERTAINMENT',
+  Gaming = 'GAMING',
+  General = 'GENERAL',
+  Music = 'MUSIC',
+  News = 'NEWS',
+  Other = 'OTHER',
+  Sports = 'SPORTS',
+  Technology = 'TECHNOLOGY',
+  Unspecified = 'UNSPECIFIED'
 }
 
 export enum VideoProvider {
-  DAILYMOTION = 'DAILYMOTION',
-  INTERNAL = 'INTERNAL',
-  OTHER = 'OTHER',
-  UNSPECIFIED = 'UNSPECIFIED',
-  VIMEO = 'VIMEO',
-  YOUTUBE = 'YOUTUBE'
+  Dailymotion = 'DAILYMOTION',
+  Internal = 'INTERNAL',
+  Other = 'OTHER',
+  Unspecified = 'UNSPECIFIED',
+  Vimeo = 'VIMEO',
+  Youtube = 'YOUTUBE'
 }
 
 export type VideoResponse = {
@@ -157,6 +171,35 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', authlogin?: { __typename?: 'TokenResponse', token?: string | null, expiresAt?: number | null } | null };
 
+export type ImportVideoMutationVariables = Exact<{
+  provider: VideoProvider;
+  externalVideoId: Scalars['String']['input'];
+}>;
+
+
+export type ImportVideoMutation = { __typename?: 'Mutation', importVideo?: { __typename?: 'VideoResponse', id?: string | null, title?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null };
+
+export type ImportVideosByPublisherMutationVariables = Exact<{
+  publisherName: Scalars['String']['input'];
+}>;
+
+
+export type ImportVideosByPublisherMutation = { __typename?: 'Mutation', importVideosByPublisher?: Array<{ __typename?: 'VideoResponse', id?: string | null, title?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null };
+
+export type CreateUserMutationVariables = Exact<{
+  input: CreateUserInput;
+}>;
+
+
+export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
+
+export type DeleteUserMutationVariables = Exact<{
+  id: Scalars['Long']['input'];
+}>;
+
+
+export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser?: boolean | null };
+
 export type GetUserQueryVariables = Exact<{
   id: Scalars['Long']['input'];
 }>;
@@ -171,6 +214,13 @@ export type ListUsersQueryVariables = Exact<{
 
 
 export type ListUsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null> | null };
+
+export type UpdateUserMutationVariables = Exact<{
+  input: UpdateUserInput;
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
 
 
 export const LoginDocument = gql`
@@ -208,6 +258,151 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const ImportVideoDocument = gql`
+    mutation ImportVideo($provider: VideoProvider!, $externalVideoId: String!) {
+  importVideo(provider: $provider, externalVideoId: $externalVideoId) {
+    id
+    title
+    durationMs
+    description
+    externalVideoId
+    uploadDate
+    createdUserId
+  }
+}
+    `;
+export type ImportVideoMutationFn = Apollo.MutationFunction<ImportVideoMutation, ImportVideoMutationVariables>;
+
+/**
+ * __useImportVideoMutation__
+ *
+ * To run a mutation, you first call `useImportVideoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useImportVideoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [importVideoMutation, { data, loading, error }] = useImportVideoMutation({
+ *   variables: {
+ *      provider: // value for 'provider'
+ *      externalVideoId: // value for 'externalVideoId'
+ *   },
+ * });
+ */
+export function useImportVideoMutation(baseOptions?: Apollo.MutationHookOptions<ImportVideoMutation, ImportVideoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ImportVideoMutation, ImportVideoMutationVariables>(ImportVideoDocument, options);
+      }
+export type ImportVideoMutationHookResult = ReturnType<typeof useImportVideoMutation>;
+export type ImportVideoMutationResult = Apollo.MutationResult<ImportVideoMutation>;
+export type ImportVideoMutationOptions = Apollo.BaseMutationOptions<ImportVideoMutation, ImportVideoMutationVariables>;
+export const ImportVideosByPublisherDocument = gql`
+    mutation ImportVideosByPublisher($publisherName: String!) {
+  importVideosByPublisher(publisherName: $publisherName) {
+    id
+    title
+    externalVideoId
+    uploadDate
+    createdUserId
+  }
+}
+    `;
+export type ImportVideosByPublisherMutationFn = Apollo.MutationFunction<ImportVideosByPublisherMutation, ImportVideosByPublisherMutationVariables>;
+
+/**
+ * __useImportVideosByPublisherMutation__
+ *
+ * To run a mutation, you first call `useImportVideosByPublisherMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useImportVideosByPublisherMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [importVideosByPublisherMutation, { data, loading, error }] = useImportVideosByPublisherMutation({
+ *   variables: {
+ *      publisherName: // value for 'publisherName'
+ *   },
+ * });
+ */
+export function useImportVideosByPublisherMutation(baseOptions?: Apollo.MutationHookOptions<ImportVideosByPublisherMutation, ImportVideosByPublisherMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ImportVideosByPublisherMutation, ImportVideosByPublisherMutationVariables>(ImportVideosByPublisherDocument, options);
+      }
+export type ImportVideosByPublisherMutationHookResult = ReturnType<typeof useImportVideosByPublisherMutation>;
+export type ImportVideosByPublisherMutationResult = Apollo.MutationResult<ImportVideosByPublisherMutation>;
+export type ImportVideosByPublisherMutationOptions = Apollo.BaseMutationOptions<ImportVideosByPublisherMutation, ImportVideosByPublisherMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    id
+    username
+    email
+    status
+    roles
+  }
+}
+    `;
+export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const DeleteUserDocument = gql`
+    mutation DeleteUser($id: Long!) {
+  deleteUser(id: $id)
+}
+    `;
+export type DeleteUserMutationFn = Apollo.MutationFunction<DeleteUserMutation, DeleteUserMutationVariables>;
+
+/**
+ * __useDeleteUserMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserMutation, { data, loading, error }] = useDeleteUserMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<DeleteUserMutation, DeleteUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument, options);
+      }
+export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
+export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
+export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
 export const GetUserDocument = gql`
     query GetUser($id: Long!) {
   user(id: $id) {
@@ -300,14 +495,40 @@ export type ListUsersQueryHookResult = ReturnType<typeof useListUsersQuery>;
 export type ListUsersLazyQueryHookResult = ReturnType<typeof useListUsersLazyQuery>;
 export type ListUsersSuspenseQueryHookResult = ReturnType<typeof useListUsersSuspenseQuery>;
 export type ListUsersQueryResult = Apollo.QueryResult<ListUsersQuery, ListUsersQueryVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    id
+    username
+    email
+    status
+    roles
+  }
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
 
-      export interface PossibleTypesResultData {
-        possibleTypes: {
-          [key: string]: string[]
-        }
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
       }
-      const result: PossibleTypesResultData = {
-  "possibleTypes": {}
-};
-      export default result;
-    
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;

@@ -1,0 +1,9 @@
+mutation ImportVideosByPublisher($publisherName: String!) {
+    importVideosByPublisher(publisherName: $publisherName) {
+        id
+        title
+        externalVideoId
+        uploadDate
+        createdUserId
+    }
+}

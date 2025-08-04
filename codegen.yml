@@ -1,24 +1,17 @@
 schema: http://localhost:8080/api/graphql
 documents: src/graphql/**/*.graphql
+
 generates:
-  src/graphql/generated/:
-    preset: client
-    presetConfig:
-      gqlImport: '@apollo/client#gql'
-      gqlTagName: gql
+  src/graphql/generated/graphql.tsx:
     plugins:
-      - add:
-          content:
-            - "/* eslint-disable camelcase,@typescript-eslint/naming-convention */"
       - typescript
       - typescript-operations
       - typescript-react-apollo
-      - fragment-matcher
     config:
       withHooks: true
-      reactApolloVersion: 3
       skipTypename: false
       strictScalars: true
+      defaultScalarType: unknown
       scalars:
         BigDecimal: number
         DateOrTimestamp: string
@@ -31,15 +24,13 @@ generates:
         ZonedDateTime: string
         DateTime: string
         JSON: any
-      namingConvention:
-        typeNames: pascal-case#pascalCase
-        enumValues: keep
-    hooks:
-      afterOneFileWrite:
-        - eslint --fix
+
   src/graphql/generated/graphql.json:
     plugins:
       - introspection
     config:
       schemaDescription: true
 
+  src/graphql/generated/possibleTypes.json:
+    plugins:
+      - fragment-matcher
