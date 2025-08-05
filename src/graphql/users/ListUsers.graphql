@@ -1,5 +1,5 @@
 query ListUsers($page: Int!, $size: Int!) {
-    users(page: $page, size: $size) {
+    userslist(page: $page, size: $size) {
         id
         username
         email

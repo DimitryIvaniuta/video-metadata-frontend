@@ -1,36 +1,58 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import DashboardPage from './pages/DashboardPage';
-import ImportSinglePage from './pages/ImportSinglePage';
-import ImportChannelPage from './pages/ImportChannelPage';
-import VideoListPage from './pages/VideoListPage';
-import UserListPage from './pages/UserListPage';
-import UserEditPage from './pages/UserEditPage';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { NavBar } from './components/NavBar';
+import { LoginPage } from './components/Auth/LoginPage';
+import { SignupPage } from './components/Auth/SignupPage';
+import { DashboardPage } from './components/DashboardPage';
+import { ImportSinglePage } from './components/ImportSinglePage';
+import { ImportChannelPage } from './components/ImportChannelPage';
+import { VideoListPage } from './components/VideoListPage';
+import { UserListPage } from './components/UserListPage';
+import { UserEditPage } from './components/UserEditPage';
 
-const RequireAuth = ({ children, roles }: { children: JSX.Element; roles?: string[] }) => {
+const RequireAuth = ({ roles }: { roles?: string[] }) => {
     const { token } = useAuth();
     if (!token) return <Navigate to="/login" replace />;
-    // Optional: decode token with jwt-decode and enforce roles here
-    return children;
+    return <Outlet />;
 };
 
 export default function App() {
     return (
-        <AuthProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/" element={<RequireAuth><DashboardPage/></RequireAuth>} />
-                    <Route path="/videos/import" element={<RequireAuth><ImportSinglePage/></RequireAuth>} />
-                    <Route path="/videos/import/channel" element={<RequireAuth><ImportChannelPage/></RequireAuth>} />
-                    <Route path="/videos" element={<RequireAuth><VideoListPage/></RequireAuth>} />
-                    <Route path="/users" element={<RequireAuth roles={['ADMIN']}><UserListPage/></RequireAuth>} />
-                    <Route path="/users/:id" element={<RequireAuth roles={['ADMIN']}><UserEditPage/></RequireAuth>} />
-                </Routes>
-            </BrowserRouter>
-        </AuthProvider>
+        <Routes>
+            {/* Public */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+
+            {/* Protected */}
+            <Route element={<RequireAuth />}>
+                {/* Layout with Navbar */}
+                <Route
+                    element={
+                        <>
+                            <NavBar />
+                            <main className="p-6">
+                                <Outlet />
+                            </main>
+                        </>
+                    }
+                >
+                    {/* If `/` and logged in → dashboard */}
+                    <Route index element={<Navigate to="/dashboard" replace />} />
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="videos" element={<VideoListPage />} />
+                    <Route path="videos/import" element={<ImportSinglePage />} />
+                    <Route path="videos/import/channel" element={<ImportChannelPage />} />
+
+                    {/* Admin only */}
+                    <Route element={<RequireAuth roles={['ADMIN']} />}>
+                        <Route path="users" element={<UserListPage />} />
+                        <Route path="users/:id" element={<UserEditPage />} />
+                    </Route>
+                </Route>
+            </Route>
+
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
     );
 }

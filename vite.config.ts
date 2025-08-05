@@ -12,6 +12,20 @@ export default defineConfig({
       }
     }),
   ],
+  server: {
+    port: 5173,          // your frontend port (optional, defaults to 5173)
+    proxy: {
+      // Proxy any request starting with /api to your backend
+      '/api': {
+        target: 'http://localhost:8080', // <-- your GraphQL server
+        changeOrigin: true,
+        secure: false,
+        // if your backend expects /api/graphql at its root, leave rewrite out
+        // otherwise uncomment the next line to strip the `/api` prefix:
+        // rewrite: (path) => path.replace(/^\/api/, '')
+      },
+    },
+  },
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },
   },
