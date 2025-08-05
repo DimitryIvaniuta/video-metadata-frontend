@@ -7,5 +7,6 @@ mutation ImportVideo($provider: VideoProvider!, $externalVideoId: String!) {
         externalVideoId
         uploadDate
         createdUserId
+        videoProvider
     }
 }

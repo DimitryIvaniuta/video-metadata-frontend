@@ -1,0 +1,31 @@
+query GetConnectionVideos(
+    $page: Int
+    $pageSize: Int
+    $provider: String
+    $sortBy: VideoSort
+    $sortDesc: Boolean
+) {
+    connectionVideos(
+        page: $page
+        pageSize: $pageSize
+        provider: $provider
+        sortBy: $sortBy
+        sortDesc: $sortDesc
+    ) {
+        items {
+            id
+            title
+            source
+            durationMs
+            description
+            videoCategory
+            videoProvider
+            externalVideoId
+            uploadDate
+            createdUserId
+        }
+        page
+        pageSize
+        total
+    }
+}

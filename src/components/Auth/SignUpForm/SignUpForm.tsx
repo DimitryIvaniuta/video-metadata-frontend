@@ -1,50 +1,61 @@
-import React, { useEffect, useState, FormEvent, ChangeEvent } from 'react';
+// src/pages/SignUpPage.tsx
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLoginMutation, useSignUpMutation } from '@/graphql/generated/graphql';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLoginMutation } from '@/graphql/generated/graphql';
 
 interface FormState {
     username: string;
+    email: string;
     password: string;
 }
 
 interface FormErrors {
     username?: string;
+    email?: string;
     password?: string;
     server?: string;
 }
 
-export const LoginPage: React.FC = () => {
+export const SignUpForm: React.FC = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
-    const [loginMut, { loading }] = useLoginMutation();
+    const [signUp,   { loading: signUpLoading,   error: signUpError   }] = useSignUpMutation();
+    const [loginMut, { loading: loginLoading,    error: loginError    }] = useLoginMutation();
 
-    // Redirect if already logged in
+    // If already logged in, redirect to import cabinet
     useEffect(() => {
         if (token) {
-            navigate('/', { replace: true });
+            navigate('/videos/import', { replace: true });
         }
     }, [token, navigate]);
 
-    // Form state & errors
-    const [form, setForm] = useState<FormState>({ username: '', password: '' });
+    // Form state
+    const [form, setForm] = useState<FormState>({
+        username: '',
+        email: '',
+        password: '',
+    });
     const [errors, setErrors] = useState<FormErrors>({});
 
-    // Handle field changes
+    // Handle input changes
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm(f => ({ ...f, [name]: value }));
         setErrors(err => ({ ...err, [name]: undefined, server: undefined }));
     };
 
-    // Basic validation
+    // Basic validations
     const validate = (values: FormState): FormErrors => {
         const errs: FormErrors = {};
         if (!values.username.trim()) {
             errs.username = 'Username is required';
         }
-        if (!values.password) {
-            errs.password = 'Password is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+            errs.email = 'Must be a valid email';
+        }
+        if (values.password.length < 6) {
+            errs.password = 'Password must be at least 6 characters';
         }
         return errs;
     };
@@ -52,6 +63,7 @@ export const LoginPage: React.FC = () => {
     // Submit handler
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        // client-side validation
         const fieldErrors = validate(form);
         if (Object.keys(fieldErrors).length) {
             setErrors(fieldErrors);
@@ -59,33 +71,45 @@ export const LoginPage: React.FC = () => {
         }
 
         try {
-            const { data, errors: gqlErrors } = await loginMut({
+            // 1) Create user
+            const { data: signupData, errors: signupGQLErrors } = await signUp({
+                variables: { input: form },
+            });
+            if (signupGQLErrors?.length) {
+                setErrors({ server: signupGQLErrors[0].message });
+                return;
+            }
+
+            // 2) Log them in
+            const { data: loginData, errors: loginGQLErrors } = await loginMut({
                 variables: { username: form.username, password: form.password },
             });
-
-            if (gqlErrors?.length) {
-                setErrors({ server: gqlErrors[0].message });
+            if (loginGQLErrors?.length) {
+                setErrors({ server: loginGQLErrors[0].message });
                 return;
             }
-
-            const jwt = data?.login?.token;
+            const jwt = loginData?.login?.token;
             if (!jwt) {
-                setErrors({ server: 'No token returned from server' });
+                setErrors({ server: 'Login failed after signup' });
                 return;
             }
 
+            // 3) Persist token & redirect
             localStorage.setItem('jwtToken', jwt);
-            navigate('/', { replace: true });
+            navigate('/videos/import', { replace: true });
         } catch (err: any) {
-            setErrors({ server: err.message || 'Login failed' });
+            setErrors({ server: err.message || 'Signup failed' });
         }
     };
+
+    const isLoading = signUpLoading || loginLoading;
+    const serverError = errors.server ?? signUpError?.message ?? loginError?.message;
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
             <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
                 <h1 className="text-3xl font-semibold text-center mb-6 text-gray-800">
-                    Sign In
+                    Create Account
                 </h1>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -110,6 +134,27 @@ export const LoginPage: React.FC = () => {
                         )}
                     </div>
 
+                    {/* Email */}
+                    <div>
+                        <label htmlFor="email" className="block text-gray-700 mb-1">
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                errors.email ? 'border-danger' : 'border-gray-300'
+                            }`}
+                            placeholder="you@example.com"
+                        />
+                        {errors.email && (
+                            <p className="mt-1 text-sm text-danger">{errors.email}</p>
+                        )}
+                    </div>
+
                     {/* Password */}
                     <div>
                         <label htmlFor="password" className="block text-gray-700 mb-1">
@@ -124,25 +169,25 @@ export const LoginPage: React.FC = () => {
                             className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                                 errors.password ? 'border-danger' : 'border-gray-300'
                             }`}
-                            placeholder="Enter your password"
+                            placeholder="At least 6 characters"
                         />
                         {errors.password && (
                             <p className="mt-1 text-sm text-danger">{errors.password}</p>
                         )}
                     </div>
 
-                    {/* Server Error */}
-                    {errors.server && (
-                        <p className="text-center text-sm text-danger">{errors.server}</p>
+                    {/* Server error */}
+                    {serverError && (
+                        <p className="text-center text-sm text-danger">{serverError}</p>
                     )}
 
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={loading}
-                        className="w-full h-12 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+                        disabled={isLoading}
+                        className="w-full flex justify-center h-12 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
                     >
-                        {loading ? 'Signing in…' : 'Sign In'}
+                        {isLoading ? 'Creating account…' : 'Sign Up'}
                     </button>
                 </form>
             </div>

@@ -174,6 +174,7 @@ export type UserResponse = {
 
 export enum UserSort {
   CreatedAt = 'CREATED_AT',
+  Email = 'EMAIL',
   LastLoginAt = 'LAST_LOGIN_AT',
   UpdatedAt = 'UPDATED_AT',
   Username = 'USERNAME'
@@ -253,6 +254,17 @@ export type SignUpMutationVariables = Exact<{
 
 export type SignUpMutation = { __typename?: 'Mutation', signUp?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, roles?: Array<Role | null> | null } | null };
 
+export type ConnectionUsersQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<UserSort>;
+  sortDesc?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type ConnectionUsersQuery = { __typename?: 'Query', connectionUsers?: { __typename?: 'UserConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null } | null> | null } | null };
+
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
 }>;
@@ -301,6 +313,17 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
 
+export type GetConnectionVideosQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  provider?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<VideoSort>;
+  sortDesc?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type GetConnectionVideosQuery = { __typename?: 'Query', connectionVideos?: { __typename?: 'VideoConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'VideoResponse', id?: string | null, title?: string | null, source?: string | null, durationMs?: number | null, description?: string | null, videoCategory?: VideoCategory | null, videoProvider?: VideoProvider | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null } | null };
+
 export type GetVideosCountQueryVariables = Exact<{
   provider?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -314,7 +337,7 @@ export type ImportVideoMutationVariables = Exact<{
 }>;
 
 
-export type ImportVideoMutation = { __typename?: 'Mutation', importVideo?: { __typename?: 'VideoResponse', id?: string | null, title?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null };
+export type ImportVideoMutation = { __typename?: 'Mutation', importVideo?: { __typename?: 'VideoResponse', id?: string | null, title?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null, videoProvider?: VideoProvider | null } | null };
 
 export type ImportVideosByPublisherMutationVariables = Exact<{
   publisherName: Scalars['String']['input'];
@@ -395,6 +418,68 @@ export function useSignUpMutation(baseOptions?: Apollo.MutationHookOptions<SignU
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
 export type SignUpMutationResult = Apollo.MutationResult<SignUpMutation>;
 export type SignUpMutationOptions = Apollo.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
+export const ConnectionUsersDocument = gql`
+    query ConnectionUsers($page: Int, $pageSize: Int, $search: String, $sortBy: UserSort, $sortDesc: Boolean) {
+  connectionUsers(
+    page: $page
+    pageSize: $pageSize
+    search: $search
+    sortBy: $sortBy
+    sortDesc: $sortDesc
+  ) {
+    items {
+      id
+      username
+      email
+      status
+      roles
+      createdAt
+      updatedAt
+      lastLoginAt
+    }
+    page
+    pageSize
+    total
+  }
+}
+    `;
+
+/**
+ * __useConnectionUsersQuery__
+ *
+ * To run a query within a React component, call `useConnectionUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useConnectionUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useConnectionUsersQuery({
+ *   variables: {
+ *      page: // value for 'page'
+ *      pageSize: // value for 'pageSize'
+ *      search: // value for 'search'
+ *      sortBy: // value for 'sortBy'
+ *      sortDesc: // value for 'sortDesc'
+ *   },
+ * });
+ */
+export function useConnectionUsersQuery(baseOptions?: Apollo.QueryHookOptions<ConnectionUsersQuery, ConnectionUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ConnectionUsersQuery, ConnectionUsersQueryVariables>(ConnectionUsersDocument, options);
+      }
+export function useConnectionUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ConnectionUsersQuery, ConnectionUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ConnectionUsersQuery, ConnectionUsersQueryVariables>(ConnectionUsersDocument, options);
+        }
+export function useConnectionUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ConnectionUsersQuery, ConnectionUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ConnectionUsersQuery, ConnectionUsersQueryVariables>(ConnectionUsersDocument, options);
+        }
+export type ConnectionUsersQueryHookResult = ReturnType<typeof useConnectionUsersQuery>;
+export type ConnectionUsersLazyQueryHookResult = ReturnType<typeof useConnectionUsersLazyQuery>;
+export type ConnectionUsersSuspenseQueryHookResult = ReturnType<typeof useConnectionUsersSuspenseQuery>;
+export type ConnectionUsersQueryResult = Apollo.QueryResult<ConnectionUsersQuery, ConnectionUsersQueryVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {
@@ -676,6 +761,70 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetConnectionVideosDocument = gql`
+    query GetConnectionVideos($page: Int, $pageSize: Int, $provider: String, $sortBy: VideoSort, $sortDesc: Boolean) {
+  connectionVideos(
+    page: $page
+    pageSize: $pageSize
+    provider: $provider
+    sortBy: $sortBy
+    sortDesc: $sortDesc
+  ) {
+    items {
+      id
+      title
+      source
+      durationMs
+      description
+      videoCategory
+      videoProvider
+      externalVideoId
+      uploadDate
+      createdUserId
+    }
+    page
+    pageSize
+    total
+  }
+}
+    `;
+
+/**
+ * __useGetConnectionVideosQuery__
+ *
+ * To run a query within a React component, call `useGetConnectionVideosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetConnectionVideosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetConnectionVideosQuery({
+ *   variables: {
+ *      page: // value for 'page'
+ *      pageSize: // value for 'pageSize'
+ *      provider: // value for 'provider'
+ *      sortBy: // value for 'sortBy'
+ *      sortDesc: // value for 'sortDesc'
+ *   },
+ * });
+ */
+export function useGetConnectionVideosQuery(baseOptions?: Apollo.QueryHookOptions<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>(GetConnectionVideosDocument, options);
+      }
+export function useGetConnectionVideosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>(GetConnectionVideosDocument, options);
+        }
+export function useGetConnectionVideosSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>(GetConnectionVideosDocument, options);
+        }
+export type GetConnectionVideosQueryHookResult = ReturnType<typeof useGetConnectionVideosQuery>;
+export type GetConnectionVideosLazyQueryHookResult = ReturnType<typeof useGetConnectionVideosLazyQuery>;
+export type GetConnectionVideosSuspenseQueryHookResult = ReturnType<typeof useGetConnectionVideosSuspenseQuery>;
+export type GetConnectionVideosQueryResult = Apollo.QueryResult<GetConnectionVideosQuery, GetConnectionVideosQueryVariables>;
 export const GetVideosCountDocument = gql`
     query GetVideosCount($provider: String) {
   connectionVideosCount(provider: $provider)
@@ -724,6 +873,7 @@ export const ImportVideoDocument = gql`
     externalVideoId
     uploadDate
     createdUserId
+    videoProvider
   }
 }
     `;

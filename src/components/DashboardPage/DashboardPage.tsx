@@ -1,7 +1,6 @@
-// src/pages/DashboardPage.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {Role, useGetMeUserQuery, useGetUsersCountQuery, useGetVideosCountQuery} from '@/graphql/generated/graphql';
+import { Role, useGetMeUserQuery, useGetUsersCountQuery, useGetVideosCountQuery } from '@/graphql/generated/graphql';
 
 export const DashboardPage: React.FC = () => {
     // 1) Fetch current user

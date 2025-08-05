@@ -2,13 +2,13 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { NavBar } from './components/NavBar';
 import { LoginPage } from './components/Auth/LoginPage';
-import { SignupPage } from './components/Auth/SignupPage';
+import { SignUpForm } from './components/Auth/SignUpForm';
 import { DashboardPage } from './components/DashboardPage';
-import { ImportSinglePage } from './components/ImportSinglePage';
-import { ImportChannelPage } from './components/ImportChannelPage';
-import { VideoListPage } from './components/VideoListPage';
-import { UserListPage } from './components/UserListPage';
-import { UserEditPage } from './components/UserEditPage';
+import { ImportSinglePage } from './components/Videos/ImportSinglePage';
+import { ImportChannelPage } from './components/Videos/ImportChannelPage';
+import { VideoListPage  } from './components/Videos/VideoListPage';
+import { UserListPage } from './components/Users/UserListPage';
+import { UserEditPage } from './components/Users/UserEditPage';
 
 const RequireAuth = ({ roles }: { roles?: string[] }) => {
     const { token } = useAuth();
@@ -21,7 +21,7 @@ export default function App() {
         <Routes>
             {/* Public */}
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/signup" element={<SignUpForm />} />
 
             {/* Protected */}
             <Route element={<RequireAuth />}>
