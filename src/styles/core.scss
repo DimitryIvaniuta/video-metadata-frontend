@@ -1,0 +1,61 @@
+// src/styles/core.scss
+
+// 1) Brand color variables
+$color-primary:   #FF6600 !default;
+$color-secondary: #0077CC !default;
+$color-success:   #22C55E !default;
+$color-alert-bg:      #FFF4E5 !default;
+$color-alert-border:  #FFA500 !default;
+$color-card-bg:       #FFFFFF !default;
+$color-card-shadow:   rgba(0, 0, 0, 0.05) !default;
+
+// 2) Root CSS variables (optional)
+:root {
+  --color-primary:   #{$color-primary};
+  --color-secondary: #{$color-secondary};
+  --color-success:   #{$color-success};
+}
+
+// 3) Container
+.container {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+// 4) Alert banner
+.alert-banner {
+  display: flex;
+  align-items: center;
+  background-color: $color-alert-bg;
+  border-left: 4px solid $color-alert-border;
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+// 5) Metric cards
+.card {
+  background-color: $color-card-bg;
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-left-color: var(--card-border-color, $color-primary);
+  box-shadow: 0 1px 3px $color-card-shadow;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+// Usage: set --card-border-color on the element to primary/secondary/success
+
+// 6) Quick actions toolbar
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  background-color: $color-card-bg;
+  box-shadow: 0 1px 3px $color-card-shadow;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}

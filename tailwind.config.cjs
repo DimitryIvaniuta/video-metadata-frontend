@@ -28,6 +28,9 @@ module.exports = {
     extend: {
       colors: {
         brand: {
+          primary: '#FF6600',    // your Terrie O’Connor orange
+          secondary: '#0077CC',  // example blue
+          success: '#22C55E',    // green
           DEFAULT: '#BA9770',               // primary accent  (Domy gold)
           brand: '#BA9770',
           dark:   '#333333',               // hover / dark-mode variant

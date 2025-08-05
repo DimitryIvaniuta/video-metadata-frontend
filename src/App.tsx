@@ -4,9 +4,9 @@ import { NavBar } from './components/NavBar';
 import { LoginPage } from './components/Auth/LoginPage';
 import { SignUpForm } from './components/Auth/SignUpForm';
 import { DashboardPage } from './components/DashboardPage';
-import { ImportSinglePage } from './components/Videos/ImportSinglePage';
-import { ImportChannelPage } from './components/Videos/ImportChannelPage';
-import { VideoListPage  } from './components/Videos/VideoListPage';
+import { ImportSinglePage } from '@/components/Videos';
+import { ImportChannelPage } from '@/components/Videos';
+import { VideoListPage  } from '@/components/Videos';
 import { UserListPage } from './components/Users/UserListPage';
 import { UserEditPage } from './components/Users/UserEditPage';
 
