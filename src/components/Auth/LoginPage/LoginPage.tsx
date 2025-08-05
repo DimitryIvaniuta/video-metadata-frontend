@@ -1,7 +1,7 @@
+// src/pages/LoginPage.tsx
 import React, { useEffect, useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLoginMutation } from '@/graphql/generated/graphql';
 
 interface FormState {
     username: string;
@@ -16,8 +16,7 @@ interface FormErrors {
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
-    const { token } = useAuth();
-    const [loginMut, { loading }] = useLoginMutation();
+    const { token, login } = useAuth();
 
     // Redirect if already logged in
     useEffect(() => {
@@ -26,9 +25,10 @@ export const LoginPage: React.FC = () => {
         }
     }, [token, navigate]);
 
-    // Form state & errors
+    // Local form state & errors
     const [form, setForm] = useState<FormState>({ username: '', password: '' });
     const [errors, setErrors] = useState<FormErrors>({});
+    const [loading, setLoading] = useState(false);
 
     // Handle field changes
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,47 +37,33 @@ export const LoginPage: React.FC = () => {
         setErrors(err => ({ ...err, [name]: undefined, server: undefined }));
     };
 
-    // Basic validation
+    // Basic client-side validation
     const validate = (values: FormState): FormErrors => {
         const errs: FormErrors = {};
-        if (!values.username.trim()) {
-            errs.username = 'Username is required';
-        }
-        if (!values.password) {
-            errs.password = 'Password is required';
-        }
+        if (!values.username.trim()) errs.username = 'Username is required';
+        if (!values.password) errs.password = 'Password is required';
         return errs;
     };
 
     // Submit handler
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        // 1) Validate
         const fieldErrors = validate(form);
-        if (Object.keys(fieldErrors).length) {
+        if (Object.keys(fieldErrors).length > 0) {
             setErrors(fieldErrors);
             return;
         }
 
+        // 2) Attempt login via context
+        setLoading(true);
         try {
-            const { data, errors: gqlErrors } = await loginMut({
-                variables: { username: form.username, password: form.password },
-            });
-
-            if (gqlErrors?.length) {
-                setErrors({ server: gqlErrors[0].message });
-                return;
-            }
-
-            const jwt = data?.login?.token;
-            if (!jwt) {
-                setErrors({ server: 'No token returned from server' });
-                return;
-            }
-
-            localStorage.setItem('jwtToken', jwt);
-            navigate('/', { replace: true });
+            await login(form.username, form.password);
+            // AuthContext.login() will store token, schedule auto-logout & redirect to '/'
         } catch (err: any) {
             setErrors({ server: err.message || 'Login failed' });
+            setLoading(false);
         }
     };
 

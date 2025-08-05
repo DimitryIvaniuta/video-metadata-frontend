@@ -1,11 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Role, useGetMeUserQuery, useGetUsersCountQuery, useGetVideosCountQuery } from '@/graphql/generated/graphql';
+import {
+    Role,
+    useGetMeUserQuery,
+    useGetUsersCountQuery,
+    useGetVideosCountQuery,
+    VideoProvider
+} from '@/graphql/generated/graphql';
 
 export const DashboardPage: React.FC = () => {
     // 1) Fetch current user
     const { data: meData, loading: meLoading, error: meError } = useGetMeUserQuery();
-    const { data: vidsData, loading: vidsLoading, error: vidsError } = useGetVideosCountQuery();
+    const { data: vidsData, loading: vidsLoading, error: vidsError } = useGetVideosCountQuery({
+        variables: {provider: VideoProvider.Youtube}
+    });
     const { data: usersData, loading: usersLoading, error: usersError } = useGetUsersCountQuery();
 
     if (meLoading || vidsLoading || usersLoading) {
