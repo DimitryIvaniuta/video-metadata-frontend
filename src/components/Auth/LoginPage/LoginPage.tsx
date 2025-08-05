@@ -82,13 +82,13 @@ export const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-            <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
+        <div className="min-h-fit bg-gray-100 flex items-center justify-center px-4">
+            <div className="max-w-md w-[500px] bg-white shadow-lg rounded-lg p-8">
                 <h1 className="text-3xl font-semibold text-center mb-6 text-gray-800">
                     Sign In
                 </h1>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Username */}
                     <div>
                         <label htmlFor="username" className="block text-gray-700 mb-1">
@@ -100,9 +100,10 @@ export const LoginPage: React.FC = () => {
                             type="text"
                             value={form.username}
                             onChange={handleChange}
-                            className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                            className={`w-full h-12 px-4 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                                 errors.username ? 'border-danger' : 'border-gray-300'
                             }`}
+                            style={{height:40, padding:'10px 4px'}}
                             placeholder="Enter your username"
                         />
                         {errors.username && (
@@ -111,7 +112,7 @@ export const LoginPage: React.FC = () => {
                     </div>
 
                     {/* Password */}
-                    <div>
+                    <div style={{ marginTop: '1rem' }}>
                         <label htmlFor="password" className="block text-gray-700 mb-1">
                             Password
                         </label>
@@ -121,9 +122,10 @@ export const LoginPage: React.FC = () => {
                             type="password"
                             value={form.password}
                             onChange={handleChange}
-                            className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                            className={`w-full h-12 px-4 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                                 errors.password ? 'border-danger' : 'border-gray-300'
                             }`}
+                            style={{height:40, padding:'10px 4px'}}
                             placeholder="Enter your password"
                         />
                         {errors.password && (
@@ -140,7 +142,8 @@ export const LoginPage: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-12 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+                        className="w-full flex justify-center py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+                        style={{ marginTop: '1.5rem', padding: 10 }}
                     >
                         {loading ? 'Signing in…' : 'Sign In'}
                     </button>

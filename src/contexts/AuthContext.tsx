@@ -5,68 +5,95 @@ import React, {
     ReactNode,
     useEffect,
     useRef,
+    useCallback
 } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '@/graphql/generated/graphql';
 
-// Shape of the JWT payload we care about
-interface JwtPayload { exp: number; sub: string; }
+// Shape of your JWT payload:
+interface JwtPayload {
+    exp: number;    // expiration (seconds since epoch)
+    sub: string;    // user ID
+}
 
+// Public context interface:
 interface AuthContextType {
     token: string | null;
-    login: (u: string, p: string) => Promise<void>;
+    login: (username: string, password: string) => Promise<void>;
     logout: () => void;
+    isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>(null!);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [token, setToken] = useState<string | null>(() => localStorage.getItem('jwtToken'));
-    const logoutTimer = useRef<number>(6000);
     const navigate = useNavigate();
-    const [loginMutation] = useLoginMutation();
+    const [token, setToken] = useState<string | null>(() => localStorage.getItem('jwtToken'));
+    const logoutTimer = useRef<number | undefined>(undefined);
 
-    // Schedule auto‐logout at token expiry
-    useEffect(() => {
-        clearTimeout(logoutTimer.current);
-        if (token) {
-            try {
-                const { exp } = jwtDecode<JwtPayload>(token);
-                const ms = exp * 1000 - Date.now();
-                if (ms > 0) {
-                    logoutTimer.current = window.setTimeout(() => logout(), ms);
-                } else {
-                    logout();
-                }
-            } catch {
+    // Clears any pending auto-logout
+    const clearLogoutTimer = () => {
+        if (logoutTimer.current) {
+            clearTimeout(logoutTimer.current);
+        }
+    };
+
+    // Schedule auto-logout exactly at token expiration
+    const scheduleAutoLogout = useCallback((jwt: string) => {
+        try {
+            const { exp } = jwtDecode<JwtPayload>(jwt);
+            const msUntilExpiry = exp * 1000 - Date.now();
+            if (msUntilExpiry <= 0) {
                 logout();
+            } else {
+                logoutTimer.current = window.setTimeout(() => {
+                    logout();
+                }, msUntilExpiry);
             }
+        } catch {
+            logout();
         }
-        return () => clearTimeout(logoutTimer.current);
-    }, [token]);
+    }, []);
 
-    const login = async (username: string, password: string) => {
-        const { data, errors } = await loginMutation({
-            variables: { username, password },
-        });
-        if (errors || !data?.login?.token) {
-            throw new Error(errors?.[0].message || 'Login failed');
+    // On mount and whenever token changes: validate & schedule
+    useEffect(() => {
+        clearLogoutTimer();
+        if (token) {
+            scheduleAutoLogout(token);
         }
-        localStorage.setItem('jwtToken', data.login.token);
-        setToken(data.login.token);
+        return clearLogoutTimer;
+    }, [token, scheduleAutoLogout]);
+
+    // Core login: POST /api/auth/login → { token }
+    const login = async (username: string, password: string) => {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            credentials: 'include', // carry refresh cookie
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+        if (!res.ok) throw new Error('Login failed');
+        const { token: jwt } = await res.json();
+        localStorage.setItem('jwtToken', jwt);
+        setToken(jwt);
         navigate('/', { replace: true });
     };
 
+    // Clear session
     const logout = () => {
-        clearTimeout(logoutTimer.current);
+        clearLogoutTimer();
         localStorage.removeItem('jwtToken');
         setToken(null);
         navigate('/login', { replace: true });
     };
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{
+            token,
+            login,
+            logout,
+            isAuthenticated: Boolean(token)
+        }}>
             {children}
         </AuthContext.Provider>
     );
