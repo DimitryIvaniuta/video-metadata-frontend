@@ -1,4 +1,4 @@
-import React, { useState }  from 'react';
+import React, { useState, useCallback }  from 'react';
 import { Link } from 'react-router-dom';
 import {
     Role,
@@ -9,14 +9,14 @@ import {
 } from '@/graphql/generated/graphql';
 import { AlertTriangle, X } from 'lucide-react';
 import { ImportSinglePage } from "@/components/Videos";
+import { Modal } from '@/components/Modal';
 
 export const DashboardPage: React.FC = () => {
-    const [isModalOpen, setModalOpen] = useState<boolean>(false);
+    const [isImportOpen, setImportOpen] = useState<boolean>(false);
 
-    const openAddImportDialog = () => {
-        console.log('openAddImportDialog: '+isModalOpen);
-        setModalOpen(true);
-    }
+    const openImport  = useCallback(() => setImportOpen(true), []);
+    const closeImport = useCallback(() => setImportOpen(false), []);
+
     // Data hooks
     const { data: meData, loading: meLoading, error: meError } = useGetMeUserQuery();
     const { data: vidsData, loading: vidsLoading, error: vidsError } = useGetVideosCountQuery({
@@ -57,7 +57,7 @@ export const DashboardPage: React.FC = () => {
                     <p className="mt-1 text-gray-600">Here’s what’s happening in your account.</p>
                 </div>
                 <button
-                    onClick={() => setModalOpen(true)}
+                    onClick={openImport}
                     className="inline-flex items-center bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-primary/50"
                     style={{padding: 10, marginBottom: 10}}
                 >
@@ -105,35 +105,15 @@ export const DashboardPage: React.FC = () => {
                     • Import Channel
                 </Link>
                 {/* MODAL */}
-                {isModalOpen && (
-                    <div
-                        className="fixed inset-0 z-50 bg-black bg-opacity-50"
-                        aria-modal="true"
-                    >
-                        <div
-                            className="absolute left-1/2 transform -translate-x-1/2 w-full max-w-lg bg-white rounded-lg shadow-xl"
-                            style={{ top: '30vh' }}
-                        >
-                            {/* Header */}
-                            <div className="flex justify-between items-center border-b px-6 py-4">
-                                <h3 className="text-xl font-semibold text-gray-800">
-                                    Import Single Video
-                                </h3>
-                                <button
-                                    onClick={() => setModalOpen(false)}
-                                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                                    aria-label="Close modal"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                            {/* Body */}
-                            <div className="p-6">
-                                <ImportSinglePage />
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <Modal
+                    isOpen={isImportOpen}
+                    title="Import Video"
+                    onClose={closeImport}
+                    maxWidthClass="max-w-lg"
+                >
+                    {/* Your existing import form/component goes here */}
+                    <ImportSinglePage />
+                </Modal>
 
             </div>
         </div>

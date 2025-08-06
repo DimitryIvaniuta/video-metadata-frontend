@@ -1,12 +1,17 @@
-import React, { useEffect, PropsWithChildren, MouseEvent, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import React, {useEffect, PropsWithChildren, MouseEvent, useCallback, useRef} from 'react';
 
 export interface ModalProps {
     isOpen: boolean;
-    title?: string;
+    /** Heading shown in the modal header */
+    title: React.ReactNode;
+    /** Called on overlay click, ESC, or close button */
     onClose: () => void;
-    /** Max width of the dialog panel (Tailwind width class). Default: max-w-lg */
+    /** Tailwind width constraint for the dialog panel (e.g. 'max-w-lg', 'max-w-3xl') */
     maxWidthClass?: string;
+    /** Extra classes for the panel, if needed */
+    className?: string;
+    /** Modal content */
+    children?: React.ReactNode;
 }
 
 /**
@@ -16,73 +21,76 @@ export interface ModalProps {
  * - Locks body scroll while open.
  * - Closes on ESC or backdrop click.
  */
-export function Modal({
-                          isOpen,
-                          title,
-                          onClose,
-                          maxWidthClass = 'max-w-lg',
-                          children,
-                      }: PropsWithChildren<ModalProps>) {
-    // Close on ESC
-    const onKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
-    }, [onClose]);
+export const Modal: React.FC<ModalProps> =({
+                                               isOpen,
+                                               title,
+                                               onClose,
+                                               maxWidthClass = 'max-w-lg',
+                                               className = '',
+                                               children,
+                      }: PropsWithChildren<ModalProps>) => {
+    const closeBtnRef = useRef<HTMLButtonElement>(null);
 
+    // Focus the close button on open for accessibility
     useEffect(() => {
-        if (!isOpen) return;
-        document.body.classList.add('modal-open');
-        window.addEventListener('keydown', onKeyDown);
-        return () => {
-            window.removeEventListener('keydown', onKeyDown);
-            document.body.classList.remove('modal-open');
-        };
-    }, [isOpen, onKeyDown]);
+        if (isOpen) {
+            closeBtnRef.current?.focus();
+        }
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
-    const stop = (e: MouseEvent) => e.stopPropagation();
+    const handleOverlayClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+        if (e.target === e.currentTarget) onClose();
+    };
 
-    return createPortal(
+    const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+        if (e.key === 'Escape') onClose();
+    };
+
+    return (
         <div
-            className="fixed inset-0 z-[1000] bg-black/50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+            onClick={handleOverlayClick}
+            onKeyDown={handleKeyDown}
             role="dialog"
             aria-modal="true"
-            onClick={onClose}    // backdrop click closes
+            aria-labelledby="modal-title"
         >
-            {/* Flex container to center horizontally; push down by 30% of viewport height */}
-            <div className="min-h-full flex justify-center items-start">
-                <div
-                    className={`w-full ${maxWidthClass} mt-[30vh] bg-white rounded-lg shadow-xl`}
-                    onClick={stop}   // prevent backdrop click from closing when clicking inside
-                >
-                    {/* Header */}
-                    <div className="flex items-center justify-between border-b px-6 py-4">
-                        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-                        <button
-                            aria-label="Close modal"
-                            onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                        >
-                            ×
-                        </button>
-                    </div>
+            <div
+                className={`w-full ${maxWidthClass} bg-white rounded-lg shadow-xl overflow-hidden ${className}`}
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between border-b px-6 py-4">
+                    <h2 id="modal-title" className="text-lg font-semibold text-gray-800">
+                        {title}
+                    </h2>
+                    <button
+                        ref={closeBtnRef}
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Close dialog"
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                    >
+                        ×
+                    </button>
+                </div>
 
-                    {/* Body */}
-                    <div className="p-6">{children}</div>
+                {/* Body */}
+                <div className="p-6">{children}</div>
 
-                    {/* Footer */}
-                    <div className="border-t px-6 py-3 flex justify-end">
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700"
-                        >
-                            Close
-                        </button>
-                    </div>
+                {/* Footer (optional) */}
+                <div className="px-6 pb-6">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="inline-flex items-center rounded-lg bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200"
+                    >
+                        Close
+                    </button>
                 </div>
             </div>
-        </div>,
-        document.body
+        </div>
     );
 }
 export default Modal;

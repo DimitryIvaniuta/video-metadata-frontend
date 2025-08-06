@@ -12,6 +12,10 @@ type FormErrors = {
     externalVideoId?: string;
 };
 
+type ImportSinglePageProps = {
+    onImported?: () => void;
+}
+
 // 1) Type‐safe extraction of enum *values*
 const providers: VideoProvider[] = Object
     .values(VideoProvider)
@@ -23,7 +27,7 @@ const formatProvider = (prov: VideoProvider): string => {
     return lower.charAt(0).toUpperCase() + lower.slice(1);
 };
 
-export const ImportSinglePage: React.FC = () => {
+export const ImportSinglePage: React.FC = ({onImported}: ImportSinglePageProps) => {
     const [form, setForm] = useState<FormState>({
         provider: VideoProvider.Youtube,
         externalVideoId: '',
@@ -57,6 +61,14 @@ export const ImportSinglePage: React.FC = () => {
         setErrors((errs) => ({ ...errs, [name]: undefined }));
     };
 
+/*
+    const doImportSinglePage = async () => {
+        // after a successful mutation:
+        await importVideo({ variables: form });
+        onImported?.();
+    }
+*/
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const validation = validate(form);
@@ -66,8 +78,11 @@ export const ImportSinglePage: React.FC = () => {
         }
         try {
             await importVideo({ variables: form });
+            onImported?.();
+
+            // await importVideo({ variables: form });
             // clear only the video ID, keep provider
-            setForm((f) => ({ ...f, externalVideoId: '' }));
+            // setForm((f) => ({ ...f, externalVideoId: '' }));
         } catch {
             // GraphQL errors surface via `error`
         }
