@@ -1,9 +1,9 @@
 query ListUsers($page: Int!, $size: Int!) {
-    userslist(page: $page, size: $size) {
-        id
-        username
-        email
-        status
-        roles
-    }
+  userslist(page: $page, size: $size) {
+    id
+    username
+    email
+    status
+    roles
+  }
 }

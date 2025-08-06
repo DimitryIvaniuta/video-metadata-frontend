@@ -1,12 +1,12 @@
 mutation ImportVideo($provider: VideoProvider!, $externalVideoId: String!) {
-    importVideo(provider: $provider, externalVideoId: $externalVideoId) {
-        id
-        title
-        durationMs
-        description
-        externalVideoId
-        uploadDate
-        createdUserId
-        videoProvider
-    }
+  importVideo(provider: $provider, externalVideoId: $externalVideoId) {
+    id
+    title
+    durationMs
+    description
+    externalVideoId
+    uploadDate
+    createdUserId
+    videoProvider
+  }
 }

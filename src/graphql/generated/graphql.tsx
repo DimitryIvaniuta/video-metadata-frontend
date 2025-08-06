@@ -340,11 +340,12 @@ export type ImportVideoMutationVariables = Exact<{
 export type ImportVideoMutation = { __typename?: 'Mutation', importVideo?: { __typename?: 'VideoResponse', id?: string | null, title?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null, videoProvider?: VideoProvider | null } | null };
 
 export type ImportVideosByPublisherMutationVariables = Exact<{
+  provider: VideoProvider;
   publisherName: Scalars['String']['input'];
 }>;
 
 
-export type ImportVideosByPublisherMutation = { __typename?: 'Mutation', importVideosByPublisher?: Array<{ __typename?: 'VideoResponse', id?: string | null, title?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null };
+export type ImportVideosByPublisherMutation = { __typename?: 'Mutation', importVideosByPublisher?: Array<{ __typename?: 'VideoResponse', id?: string | null, title?: string | null, source?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null };
 
 
 export const LoginDocument = gql`
@@ -905,10 +906,13 @@ export type ImportVideoMutationHookResult = ReturnType<typeof useImportVideoMuta
 export type ImportVideoMutationResult = Apollo.MutationResult<ImportVideoMutation>;
 export type ImportVideoMutationOptions = Apollo.BaseMutationOptions<ImportVideoMutation, ImportVideoMutationVariables>;
 export const ImportVideosByPublisherDocument = gql`
-    mutation ImportVideosByPublisher($publisherName: String!) {
-  importVideosByPublisher(publisherName: $publisherName) {
+    mutation ImportVideosByPublisher($provider: VideoProvider!, $publisherName: String!) {
+  importVideosByPublisher(provider: $provider, publisherName: $publisherName) {
     id
     title
+    source
+    durationMs
+    description
     externalVideoId
     uploadDate
     createdUserId
@@ -930,6 +934,7 @@ export type ImportVideosByPublisherMutationFn = Apollo.MutationFunction<ImportVi
  * @example
  * const [importVideosByPublisherMutation, { data, loading, error }] = useImportVideosByPublisherMutation({
  *   variables: {
+ *      provider: // value for 'provider'
  *      publisherName: // value for 'publisherName'
  *   },
  * });

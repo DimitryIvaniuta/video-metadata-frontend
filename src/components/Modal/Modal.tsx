@@ -1,96 +1,94 @@
-import React, {useEffect, PropsWithChildren, MouseEvent, useCallback, useRef} from 'react';
+import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import './Modal.scss';
 
 export interface ModalProps {
-    isOpen: boolean;
-    /** Heading shown in the modal header */
-    title: React.ReactNode;
-    /** Called on overlay click, ESC, or close button */
-    onClose: () => void;
-    /** Tailwind width constraint for the dialog panel (e.g. 'max-w-lg', 'max-w-3xl') */
-    maxWidthClass?: string;
-    /** Extra classes for the panel, if needed */
-    className?: string;
-    /** Modal content */
-    children?: React.ReactNode;
+  isOpen: boolean;
+  title: React.ReactNode;
+  onClose: () => void;
+  maxWidthClass?: string; // e.g. 'max-w-lg', 'max-w-3xl'
+  className?: string;
+  children?: React.ReactNode;
 }
 
-/**
- * Accessible modal rendered via portal.
- * - Covers viewport with a semi-transparent backdrop.
- * - Positions dialog ~30% from top (mt-[30vh]).
- * - Locks body scroll while open.
- * - Closes on ESC or backdrop click.
- */
-export const Modal: React.FC<ModalProps> =({
-                                               isOpen,
-                                               title,
-                                               onClose,
-                                               maxWidthClass = 'max-w-lg',
-                                               className = '',
-                                               children,
-                      }: PropsWithChildren<ModalProps>) => {
-    const closeBtnRef = useRef<HTMLButtonElement>(null);
+export const Modal = ({
+  isOpen,
+  title,
+  onClose,
+  maxWidthClass = "max-w-lg",
+  className = "",
+  children,
+}: ModalProps) => {
+  const panelRef = useRef<HTMLDivElement>(null);
 
-    // Focus the close button on open for accessibility
-    useEffect(() => {
-        if (isOpen) {
-            closeBtnRef.current?.focus();
-        }
-    }, [isOpen]);
-
-    if (!isOpen) return null;
-
-    const handleOverlayClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
-        if (e.target === e.currentTarget) onClose();
+  // Lock/unlock body scroll while modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
     };
+  }, [isOpen]);
 
-    const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-        if (e.key === 'Escape') onClose();
+  // Close on ESC
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
     };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
 
-    return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
-            onClick={handleOverlayClick}
-            onKeyDown={handleKeyDown}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title"
-        >
-            <div
-                className={`w-full ${maxWidthClass} bg-white rounded-lg shadow-xl overflow-hidden ${className}`}
-            >
-                {/* Header */}
-                <div className="flex items-center justify-between border-b px-6 py-4">
-                    <h2 id="modal-title" className="text-lg font-semibold text-gray-800">
-                        {title}
-                    </h2>
-                    <button
-                        ref={closeBtnRef}
-                        type="button"
-                        onClick={onClose}
-                        aria-label="Close dialog"
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                    >
-                        ×
-                    </button>
-                </div>
+  if (!isOpen) return null;
 
-                {/* Body */}
-                <div className="p-6">{children}</div>
+  const overlayClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    if (e.target === e.currentTarget) onClose();
+  };
 
-                {/* Footer (optional) */}
-                <div className="px-6 pb-6">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="inline-flex items-center rounded-lg bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200"
-                    >
-                        Close
-                    </button>
-                </div>
-            </div>
+  const content = (
+    <div
+      className="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      onClick={overlayClick}
+    >
+      <div
+        ref={panelRef}
+        className={`modal-panel ${maxWidthClass} ${className}`}
+      >
+        {/* Header */}
+        <div className="modal-header">
+          <h2 id="modal-title" className="modal-title">
+            {title}
+          </h2>
+          <button
+            type="button"
+            aria-label="Close dialog"
+            onClick={onClose}
+            className="modal-close-btn hover:text-gray-600"
+          >
+            ×
+          </button>
         </div>
-    );
-}
-export default Modal;
+        {/* Body */}
+        <div className="modal-body">{children}</div>
+        {/* Footer */}
+        <div className="modal-footer">
+          <button
+            type="button"
+            onClick={onClose}
+            className="btn-close hover:bg-gray-200"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Use a portal so the modal sits at the top of the DOM tree
+  return createPortal(content, document.body);
+};

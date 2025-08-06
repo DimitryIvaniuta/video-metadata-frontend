@@ -13,7 +13,6 @@ RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
 # Only copy files needed to install & build
 COPY package.json pnpm-lock.yaml* ./
 COPY tsconfig*.json vite.config.ts ./
-COPY tailwind.config.cjs postcss.config.cjs ./
 COPY index.html ./
 COPY src ./src
 

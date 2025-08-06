@@ -1,2 +1,1 @@
-
-export * from './ImportSinglePage';
+export * from "./ImportSinglePage";

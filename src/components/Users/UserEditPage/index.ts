@@ -1,1 +1,1 @@
-export * from './UserEditPage'
+export * from "./UserEditPage";

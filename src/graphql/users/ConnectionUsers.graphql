@@ -1,29 +1,29 @@
 query ConnectionUsers(
-    $page: Int
-    $pageSize: Int
-    $search: String
-    $sortBy: UserSort
-    $sortDesc: Boolean
+  $page: Int
+  $pageSize: Int
+  $search: String
+  $sortBy: UserSort
+  $sortDesc: Boolean
 ) {
-    connectionUsers(
-        page: $page
-        pageSize: $pageSize
-        search: $search
-        sortBy: $sortBy
-        sortDesc: $sortDesc
-    ) {
-        items {
-            id
-            username
-            email
-            status
-            roles
-            createdAt
-            updatedAt
-            lastLoginAt
-        }
-        page
-        pageSize
-        total
+  connectionUsers(
+    page: $page
+    pageSize: $pageSize
+    search: $search
+    sortBy: $sortBy
+    sortDesc: $sortDesc
+  ) {
+    items {
+      id
+      username
+      email
+      status
+      roles
+      createdAt
+      updatedAt
+      lastLoginAt
     }
+    page
+    pageSize
+    total
+  }
 }

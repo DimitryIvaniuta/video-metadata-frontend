@@ -1,13 +1,38 @@
-// src/styles/core.scss
-
-// 1) Brand color variables
-$color-primary:   #FF6600 !default;
-$color-secondary: #0077CC !default;
-$color-success:   #22C55E !default;
+@use "sass:color";
+// ----------------------------------------------------------------------------
+// 1) Design Tokens
+// ----------------------------------------------------------------------------
+$color-primary:    #FF6600 !default;
+$color-secondary:  #0077CC !default;
+$color-success:    #22C55E !default;
 $color-alert-bg:      #FFF4E5 !default;
-$color-alert-border:  #FFA500 !default;
-$color-card-bg:       #FFFFFF !default;
+$color-alert-border:  #F97316 !default;
+$color-white:         #FFFFFF !default;
+$color-gray-100:      #F3F4F6 !default;
+$color-gray-300:      #D1D5DB !default;
+$color-gray-700:      #374151 !default;
+$color-gray-900:      #111827 !default;
+$color-danger:        #DC2626 !default;
+$color-gray-700: #374151 !default;
+$color-gray-800: #1F2937 !default;
+$color-gray-900: #111827 !default;
 $color-card-shadow:   rgba(0, 0, 0, 0.05) !default;
+$color-card-bg:       #FFFFFF !default;
+$shadow-sm:       0 1px 2px rgba(0,0,0,0.05) !default;
+$shadow-lg:       0 10px 15px rgba(0,0,0,0.1) !default;
+$radius-lg:       3px !default;
+
+$space-4: 1rem !default;
+$space-6: 1.5rem !default;
+
+// ----------------------------------------------------------------------------
+// 2) Global Reset & Base
+// ----------------------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 // 2) Root CSS variables (optional)
 :root {
@@ -58,4 +83,327 @@ $color-card-shadow:   rgba(0, 0, 0, 0.05) !default;
   box-shadow: 0 1px 3px $color-card-shadow;
   border-radius: 0.5rem;
   padding: 1rem;
+}
+
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background-color: $color-gray-100;
+  color: $color-gray-900;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ----------------------------------------------------------------------------
+// 3) Utility Helpers
+// ----------------------------------------------------------------------------
+.hidden       { display: none !important; }
+.flex-center  { display: flex; align-items: center; justify-content: center; }
+
+// ----------------------------------------------------------------------------
+// 4) Modals
+// ----------------------------------------------------------------------------
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.6);
+  padding: 0 $space-4;
+}
+
+.modal-panel {
+  width: 100%;
+  max-width: 32rem; // ≈ max-w-lg
+  background-color: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $color-gray-300;
+  padding: $space-4 $space-6;
+}
+
+.modal-body {
+  padding: $space-6;
+}
+
+.modal-footer {
+  padding: 0 $space-6 $space-6;
+}
+
+// ----------------------------------------------------------------------------
+// 5) Alert Banner
+// ----------------------------------------------------------------------------
+.alert-banner {
+  display: flex;
+  align-items: center;
+  background-color: $color-alert-bg;
+  border-left: 4px solid $color-alert-border;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+// ----------------------------------------------------------------------------
+// 6) Dashboard Layout
+// ----------------------------------------------------------------------------
+.dashboard-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: $space-4 $space-6;
+  > * + * {
+    margin-top: $space-6;
+  }
+}
+
+.dashboard-greeting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: $space-6;
+}
+
+.dashboard-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-4;
+  background-color: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  padding: $space-4;
+}
+
+// ----------------------------------------------------------------------------
+// 7) Metric Cards
+// ----------------------------------------------------------------------------
+.metric-card {
+  background-color: $color-white;
+  padding: $space-6;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  border-left: 4px solid transparent;
+
+  &.metric-primary   { border-color: $color-primary; }
+  &.metric-secondary { border-color: $color-secondary; }
+  &.metric-success   { border-color: $color-success; }
+}
+
+// ----------------------------------------------------------------------------
+// 8) Buttons & Links
+// ----------------------------------------------------------------------------
+.btn {
+  &-primary {
+    @extend .flex-center;
+    background-color: $color-primary;
+    color: $color-white;
+    font-weight: 500;
+    padding: 0 $space-4;
+    height: 2.5rem;
+    border: none;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover { background-color: color.scale($color-secondary, $lightness: -10%); }
+  }
+  &-secondary {
+    @extend .flex-center;
+    background-color: $color-secondary;
+    color: $color-white;
+    font-weight: 500;
+    padding: 0 $space-4;
+    height: 2.5rem;
+    border: none;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover { background-color: color.scale($color-secondary, $lightness: -10%); }
+  }
+  &-pill {
+    padding: 0 $space-4;
+    height: 2.5rem;
+    background-color: $color-gray-100;
+    color: $color-gray-700;
+    border: none;
+    border-radius: 9999px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover { background-color: color.scale($color-gray-100, $lightness: 5%); }
+  }
+  &-close {
+    background: none;
+    border: none;
+    color: $color-gray-700;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+
+    &:hover { color: $color-gray-900; }
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 9) Forms
+// ----------------------------------------------------------------------------
+.form-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 $space-4;
+  border: 1px solid $color-gray-300;
+  border-radius: $radius-lg;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: box-shadow 0.2s;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.5);
+  }
+}
+
+.form-error {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: $color-danger;
+}
+
+.mt-8 {
+  margin-top: 2rem; /* same as Tailwind's mt-8 */
+}
+
+.p-4 {
+  padding: 1rem;    /* same as Tailwind's p-4 */
+}
+
+.bg-red-500 {
+  background-color: #EF4444; /* Tailwind's red-500 */
+}
+
+.text-white {
+  color: #FFFFFF;            /* white text */
+}
+
+.font-bold {
+  font-weight: 700;          /* bold text */
+}
+
+.btn-primary {
+  @extend .flex-center;
+  background-color: $color-primary;
+  /* … */
+  &:hover {
+    background-color: color.scale($color-primary, $lightness: -10%);
+  }
+}
+
+.btn-secondary {
+  @extend .flex-center;
+  background-color: $color-secondary;
+  /* … */
+  &:hover {
+    background-color: color.scale($color-secondary, $lightness: -10%);
+  }
+}
+
+.btn-pill {
+  /* … */
+  &:hover {
+    background-color: color.scale($color-gray-100, $lightness: 5%);
+  }
+}
+
+
+.text-3xl {
+  font-size: 1.875rem;   // 30px
+  line-height: 2.25rem;  // 36px
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem; // 24px
+}
+
+.text-gray-800 {
+  color: $color-gray-800;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.py-2 {
+  padding-top: 0.5rem;  // 8px
+  padding-bottom: 0.5rem;
+}
+
+.rounded-lg {
+  border-radius: $radius-lg;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.transition {
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+// Background utilities
+//.bg-primary {
+//  background-color: $color-primary;
+//}
+
+.text-white {
+  color: $color-white;
+}
+
+
+//.hover-bg-primary-90 {
+//  &:hover {
+//    background-color: color.change($color-primary, $alpha: 0.9);
+//  }
+//}
+
+// Disabled opacity variant: apply class plus native disabled attr
+.disabled-opacity-50 {
+  &:disabled {
+    opacity: 0.5;
+  }
 }

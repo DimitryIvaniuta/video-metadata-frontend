@@ -1,9 +1,12 @@
-mutation ImportVideosByPublisher($publisherName: String!) {
-    importVideosByPublisher(publisherName: $publisherName) {
-        id
-        title
-        externalVideoId
-        uploadDate
-        createdUserId
-    }
+mutation ImportVideosByPublisher($provider: VideoProvider!, $publisherName: String!) {
+  importVideosByPublisher(provider: $provider, publisherName: $publisherName) {
+    id
+    title
+    source
+    durationMs
+    description
+    externalVideoId
+    uploadDate
+    createdUserId
+  }
 }

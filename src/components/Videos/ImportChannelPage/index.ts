@@ -1,2 +1,1 @@
-
-export * from './ImportChannelPage';
+export * from "./ImportChannelPage";

@@ -1,12 +1,12 @@
 query GetUser($id: Long!) {
-    user(id: $id) {
-        id
-        username
-        email
-        status
-        createdAt
-        updatedAt
-        lastLoginAt
-        roles
-    }
+  user(id: $id) {
+    id
+    username
+    email
+    status
+    createdAt
+    updatedAt
+    lastLoginAt
+    roles
+  }
 }

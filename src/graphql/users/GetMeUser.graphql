@@ -1,12 +1,12 @@
 query GetMeUser {
-    me {
-        id
-        username
-        email
-        status
-        roles
-        createdAt
-        updatedAt
-        lastLoginAt
-    }
+  me {
+    id
+    username
+    email
+    status
+    roles
+    createdAt
+    updatedAt
+    lastLoginAt
+  }
 }
