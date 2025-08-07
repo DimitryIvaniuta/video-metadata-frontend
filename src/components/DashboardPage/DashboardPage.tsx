@@ -43,7 +43,10 @@ export const DashboardPage = () => {
     data: usersData,
     loading: usersLoading,
     error: usersError,
-  } = useGetUsersCountQuery();
+  } = useGetUsersCountQuery({
+    fetchPolicy: 'network-only',                        // always hit server for count
+    nextFetchPolicy: 'cache-first',
+  });
 
   if (meLoading || vidsLoading || usersLoading) {
     return <div className="p-8 text-center">Loading dashboard...</div>;

@@ -23,7 +23,7 @@ type ImportChanelPageProps = {
 export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
   // Extract enum values in a type-safe way
   const providers: VideoProvider[] = Object.values(VideoProvider).filter(
-    (v): v is VideoProvider => typeof v === "string",
+    (v): v is VideoProvider => true,
   );
 
   // React state for form values & errors
@@ -33,7 +33,12 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [importChannel, { data, loading, error }] =
-    useImportVideosByPublisherMutation();
+    useImportVideosByPublisherMutation(
+        {
+          refetchQueries: ['GetVideosCount'],
+          awaitRefetchQueries: true,
+        }
+    );
 
   // Handle input changes
   const handleChange = (

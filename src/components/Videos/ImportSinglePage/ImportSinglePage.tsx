@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from "react";
 import {
   VideoProvider,
-  useImportVideoMutation,
+  useImportVideoMutation, GetVideosCountDocument,
 } from "@/graphql/generated/graphql";
 import "../ImportPage.scss";
 
@@ -38,8 +38,13 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
     externalVideoId: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
-  const [importVideo, { data, loading, error }] = useImportVideoMutation();
-
+  const [importVideo, { data, loading, error }] = useImportVideoMutation(
+      {
+        refetchQueries: ['GetVideosCount'],
+        awaitRefetchQueries: true,
+      }
+  );
+  //GetVideosCountDocument
   const validate = (values: FormState): FormErrors => {
     const errs: FormErrors = {};
     if (
