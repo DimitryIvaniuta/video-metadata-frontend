@@ -1,14 +1,13 @@
 @use "sass:color";
-// ----------------------------------------------------------------------------
 // 1) Design Tokens
-// ----------------------------------------------------------------------------
-$color-primary:    #FF6600 !default;
-$color-secondary:  #0077CC !default;
+$color-primary:    #1787ff !default;
+$color-secondary:  rgba(74, 144, 226, 0.48);
 $color-success:    #22C55E !default;
 $color-alert-bg:      #FFF4E5 !default;
 $color-alert-border:  #F97316 !default;
 $color-white:         #FFFFFF !default;
 $color-gray-100:      #F3F4F6 !default;
+$color-gray-50:      #D1D5DB !default;
 $color-gray-300:      #D1D5DB !default;
 $color-gray-700:      #374151 !default;
 $color-gray-900:      #111827 !default;
@@ -24,10 +23,9 @@ $radius-lg:       3px !default;
 
 $space-4: 1rem !default;
 $space-6: 1.5rem !default;
+$space-8: 0;
 
-// ----------------------------------------------------------------------------
 // 2) Global Reset & Base
-// ----------------------------------------------------------------------------
 *,
 *::before,
 *::after {
@@ -72,7 +70,6 @@ $space-6: 1.5rem !default;
 }
 
 // Usage: set --card-border-color on the element to primary/secondary/success
-
 // 6) Quick actions toolbar
 .toolbar {
   display: flex;
@@ -95,15 +92,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-// ----------------------------------------------------------------------------
 // 3) Utility Helpers
-// ----------------------------------------------------------------------------
 .hidden       { display: none !important; }
 .flex-center  { display: flex; align-items: center; justify-content: center; }
 
-// ----------------------------------------------------------------------------
 // 4) Modals
-// ----------------------------------------------------------------------------
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -140,9 +133,7 @@ body {
   padding: 0 $space-6 $space-6;
 }
 
-// ----------------------------------------------------------------------------
 // 5) Alert Banner
-// ----------------------------------------------------------------------------
 .alert-banner {
   display: flex;
   align-items: center;
@@ -153,9 +144,7 @@ body {
   box-shadow: $shadow-sm;
 }
 
-// ----------------------------------------------------------------------------
 // 6) Dashboard Layout
-// ----------------------------------------------------------------------------
 .dashboard-container {
   max-width: 1280px;
   margin: 0 auto;
@@ -190,9 +179,7 @@ body {
   padding: $space-4;
 }
 
-// ----------------------------------------------------------------------------
 // 7) Metric Cards
-// ----------------------------------------------------------------------------
 .metric-card {
   background-color: $color-white;
   padding: $space-6;
@@ -205,9 +192,7 @@ body {
   &.metric-success   { border-color: $color-success; }
 }
 
-// ----------------------------------------------------------------------------
 // 8) Buttons & Links
-// ----------------------------------------------------------------------------
 .btn {
   &-primary {
     @extend .flex-center;
@@ -264,9 +249,7 @@ body {
   }
 }
 
-// ----------------------------------------------------------------------------
 // 9) Forms
-// ----------------------------------------------------------------------------
 .form-input {
   width: 100%;
   height: 2.5rem;

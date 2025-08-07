@@ -3,6 +3,7 @@ import {
   VideoProvider,
   useImportVideosByPublisherMutation,
 } from "@/graphql/generated/graphql";
+import "../ImportPage.scss";
 
 interface FormState {
   provider: VideoProvider;
@@ -80,13 +81,13 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
     prov.charAt(0) + prov.slice(1).toLowerCase();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="max-w-lg w-full bg-white shadow-md rounded-lg p-8">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+    <div className="import-single-container">
+      <div>
+        <h2 className="import-single-card">
           Import Channel
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="import-single-form">
           {/* Provider */}
           <div>
             <label htmlFor="provider" className="block text-gray-700 mb-1">
@@ -97,9 +98,7 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
               name="provider"
               value={form.provider}
               onChange={handleChange}
-              className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.provider ? "border-danger" : "border-gray-300"
-              }`}
+              className={`form-select ${errors.provider ? 'error' : ''}`}
             >
               {providers.map((prov) => (
                 <option key={prov} value={prov}>
@@ -113,7 +112,7 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
           </div>
 
           {/* Channel ID */}
-          <div>
+          <div className="import-input">
             <label htmlFor="channelId" className="block text-gray-700 mb-1">
               Channel ID
             </label>
@@ -123,9 +122,7 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
               type="text"
               value={form.channelId}
               onChange={handleChange}
-              className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.channelId ? "border-danger" : "border-gray-300"
-              }`}
+              className={`form-input ${errors.channelId ? 'error' : ''}`}
               placeholder="Enter channel ID"
             />
             {errors.channelId && (
@@ -142,7 +139,7 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+            className="btn-import"
           >
             {loading ? "Importing…" : "Import Channel"}
           </button>
@@ -150,8 +147,8 @@ export const ImportChannelPage = ({ onImported }: ImportChanelPageProps) => {
 
         {/* Success Summary */}
         {data?.importVideosByPublisher && (
-          <div className="mt-8 p-4 bg-green-50 rounded-lg">
-            <h3 className="text-lg font-medium text-success mb-2">
+            <div className="import-success">
+              <h3 className="import-success-title">
               Imported Successfully!
             </h3>
             <p>

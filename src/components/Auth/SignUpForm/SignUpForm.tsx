@@ -1,4 +1,3 @@
-// src/pages/SignUpPage.tsx
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {

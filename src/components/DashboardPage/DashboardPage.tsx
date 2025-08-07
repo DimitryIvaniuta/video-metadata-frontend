@@ -80,9 +80,10 @@ export const DashboardPage = () => {
             Here’s what’s happening in your account.
           </p>
         </div>
-
-        <button onClick={singleModal.open}>+ Import Video</button>
-        <button onClick={channelModal.open}>+ Import Channel</button>
+        <div style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 20, marginBottom: 20}}>
+          <button className={'btn-secondary'} onClick={singleModal.open}>+ Import Video</button>
+          <button className={'btn-secondary'} onClick={channelModal.open}>+ Import Channel</button>
+        </div>
       </header>
 
       {/* METRIC CARDS */}

@@ -1,4 +1,3 @@
-// src/hooks/useModalDialog.ts
 import React, { ReactNode, useState, useCallback } from "react";
 import { Modal } from "@/components/Modal";
 

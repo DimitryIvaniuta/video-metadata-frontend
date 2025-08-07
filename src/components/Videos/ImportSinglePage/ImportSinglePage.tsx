@@ -1,9 +1,9 @@
-// src/pages/ImportSinglePage.tsx
 import React, { FormEvent, useState } from "react";
 import {
   VideoProvider,
   useImportVideoMutation,
 } from "@/graphql/generated/graphql";
+import "../ImportPage.scss";
 
 type FormState = {
   provider: VideoProvider;
@@ -21,7 +21,7 @@ type ImportSinglePageProps = {
 
 // 1) Type‐safe extraction of enum *values*
 const providers: VideoProvider[] = Object.values(VideoProvider).filter(
-  (v): v is VideoProvider => typeof v === "string",
+  (v): v is VideoProvider => true,
 );
 
 // 2) Utility to format e.g. "YOUTUBE" -> "Youtube"
@@ -66,14 +66,6 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
     setErrors((errs) => ({ ...errs, [name]: undefined }));
   };
 
-  /*
-    const doImportSinglePage = async () => {
-        // after a successful mutation:
-        await importVideo({ variables: form });
-        onImported?.();
-    }
-*/
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const validation = validate(form);
@@ -84,26 +76,22 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
     try {
       await importVideo({ variables: form });
       onImported?.();
-
-      // await importVideo({ variables: form });
-      // clear only the video ID, keep provider
-      // setForm((f) => ({ ...f, externalVideoId: '' }));
     } catch {
       // GraphQL errors surface via `error`
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="max-w-lg w-full bg-white shadow-md rounded-lg p-8">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+    <div className="import-single-container">
+      <div>
+        <h2 className="import-single-card">
           Import Single Video
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="import-single-form">
           {/* Provider */}
-          <div>
-            <label htmlFor="provider" className="block text-gray-700 mb-1">
+          <div className="import-input">
+            <label htmlFor="provider" className="form-label">
               Provider
             </label>
             <select
@@ -111,9 +99,7 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
               name="provider"
               value={form.provider}
               onChange={handleChange}
-              className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.provider ? "border-danger" : "border-gray-300"
-              }`}
+              className={`form-select ${errors.provider ? 'error' : ''}`}
             >
               {providers.map((prov: VideoProvider) => (
                 <option key={prov} value={prov}>
@@ -127,10 +113,10 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
           </div>
 
           {/* Video ID */}
-          <div>
+          <div className="import-input">
             <label
               htmlFor="externalVideoId"
-              className="block text-gray-700 mb-1"
+              className="form-label"
             >
               Video ID
             </label>
@@ -140,9 +126,7 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
               type="text"
               value={form.externalVideoId}
               onChange={handleChange}
-              className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.externalVideoId ? "border-danger" : "border-gray-300"
-              }`}
+              className={`form-input ${errors.externalVideoId ? 'error' : ''}`}
               placeholder="Enter video ID"
             />
             {errors.externalVideoId && (
@@ -161,7 +145,7 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+            className="btn-import"
           >
             {loading ? "Importing…" : "Import Video"}
           </button>
@@ -169,8 +153,8 @@ export const ImportSinglePage: React.FC<ImportSinglePageProps> = ({
 
         {/* Success */}
         {data?.importVideo && (
-          <div className="mt-8 p-4 bg-green-50 rounded-lg">
-            <h3 className="text-lg font-medium text-success mb-2">
+          <div className="import-success">
+            <h3 className="import-success-title">
               Imported Successfully!
             </h3>
             <p>

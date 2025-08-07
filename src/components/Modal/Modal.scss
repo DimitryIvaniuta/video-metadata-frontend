@@ -1,10 +1,4 @@
-// src/components/Modal.scss
-
-// --------------------------------------------------------------------------
-// Semantic modal classes and utility fallbacks for Tailwind port
-// --------------------------------------------------------------------------
-
-/* Overlay (fixed scrim + centering) */
+// 1) Overlay (scrim + centering)
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -13,79 +7,107 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 0 1rem; /* px-4 */
+  padding: 0 1rem;
 }
 
-/* Panel (card) */
+// 2) Panel (window chrome + drop shadow)
+// ————————————————————————————————————————————————————————————
 .modal-panel {
-  width: 100%;    /* w-full */
-  max-width: 32rem; /* max-w-lg */
-  background-color: #ffffff; /* bg-white */
-  border-radius: 0.5rem; /* rounded-lg */
-  /* shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-  0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  overflow: hidden; /* overflow-hidden */
+  width: 100%;
+  max-width: 32rem; /* same as max-w-lg */
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow:
+          0 25px 50px rgba(0, 0, 0, 0.1),
+          0 10px 10px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Alternate max width */
-.max-w-xl { max-width: 36rem; }
-
-/* Header */
+// ————————————————————————————————————————————————————————————
+// 3) Header (blue bar, white text, close icon)
+// ————————————————————————————————————————————————————————————
 .modal-header {
-  display: flex; /* flex */
-  align-items: center; /* items-center */
-  justify-content: space-between; /* justify-between */
-  border-bottom: 1px solid #e5e7eb; /* border-b */
-  padding: 1rem 1.5rem; /* py-4 px-6 */
+  background-color: #0052cc;  /* your portal header blue */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;      /* adjust as needed */
+  border-bottom: 2px solid #0041a8; /* slightly darker for separation */
 }
 
-/* Title */
 .modal-title {
-  font-size: 1.125rem; /* text-lg */
-  line-height: 1.75rem;
-  font-weight: 600; /* font-semibold */
-  color: #111827; /* text-gray-900 */
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
   margin: 0;
 }
 
-/* Close button in header */
 .modal-close-btn {
   background: none;
   border: none;
-  color: #9ca3af; /* text-gray-400 */
+  color: #fff;
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
-  transition: color 0.2s ease;
+  opacity: 0.8;
+  transition: opacity 0.15s;
 }
-.hover\:text-gray-600:hover {
-  color: #4b5563; /* gray-600 */
+.modal-close-btn:hover {
+  opacity: 1;
 }
 
-/* Body */
+// ————————————————————————————————————————————————————————————
+// 4) Body (white, scrollable content area)
+// ————————————————————————————————————————————————————————————
 .modal-body {
-  padding: 1.5rem; /* p-6 */
+  padding: 1.5rem;      /* ample padding */
+  background-color: #fff;
+  flex: 1 1 auto;       /* allow scrolling if content overflows */
+  overflow-y: auto;
 }
 
-/* Footer */
+// ————————————————————————————————————————————————————————————
+// 5) Footer (light gray background, buttons right-aligned)
+// ————————————————————————————————————————————————————————————
 .modal-footer {
-  padding: 0 1.5rem 1.5rem; /* px-6 pb-6 */
+  background-color: #f9fafb; /* Tailwind gray-50 equivalent */
+  border-top: 1px solid #e5e7eb; /* gray-200 */
+  padding: 1rem;                 /* uniform padding */
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
-/* Footer Close Button */
-.modal-footer .btn-close {
-  display: inline-flex; /* inline-flex items-center */
-  align-items: center;
-  background-color: #f3f4f6; /* bg-gray-100 */
-  padding: 0.5rem 1rem; /* py-2 px-4 */
-  color: #374151; /* text-gray-700 */
-  font-size: 1rem;
+// Footer buttons
+.btn-modal-update {
+  background-color: #0052cc;
+  color: #fff;
   border: none;
-  border-radius: 0.5rem; /* rounded-lg */
+  border-radius: 0.375rem;  /* rounded-md */
+  padding: 0.5rem 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 }
-.hover\:bg-gray-200:hover {
-  background-color: #e5e7eb; /* gray-200 */
+.btn-modal-update:hover:not(:disabled) {
+  background-color: #003d99;
+}
+.btn-modal-update:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn-modal-cancel {
+  background: none;
+  border: none;
+  color: #0052cc;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.btn-modal-cancel:hover {
+  color: #003d99;
 }

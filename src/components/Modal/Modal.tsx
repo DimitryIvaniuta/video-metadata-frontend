@@ -77,12 +77,13 @@ export const Modal = ({
         <div className="modal-body">{children}</div>
         {/* Footer */}
         <div className="modal-footer">
+
           <button
-            type="button"
-            onClick={onClose}
-            className="btn-close hover:bg-gray-200"
+              type="button"
+              onClick={onClose}
+              className="btn-modal-cancel"
           >
-            Close
+            Cancel
           </button>
         </div>
       </div>
