@@ -9,6 +9,7 @@ import { ImportChannelPage } from "@/components/Videos";
 import { VideoListPage } from "@/components/Videos";
 import { UserListPage } from "./components/Users/UserListPage";
 import { UserEditPage } from "./components/Users/UserEditPage";
+import {AutoCompleteApplication} from "@/components/Pipeline/DebounceInput/AutoCompleteApplication";
 
 const RequireAuth = ({ roles }: { roles?: string[] }) => {
   const { token } = useAuth();
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="videos" element={<VideoListPage />} />
             <Route path="videos/import" element={<ImportSinglePage />} />
+            <Route path="pipeline/debouncedinput" element={<AutoCompleteApplication />} />
             <Route
               path="videos/import/channel"
               element={<ImportChannelPage />}

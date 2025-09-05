@@ -133,6 +133,8 @@ export const DashboardPage = () => {
         <Link to="/videos">• View All Videos</Link>
         {isAdmin && <Link to="/users">• Manage Users</Link>}
         <Link to="/videos/import/channel">• Import Channel</Link>
+        <Link to="/pipeline/debouncedinput">• Debounced Input</Link>
+
         {/* MODAL */}
         {singleModal.dialog}
         {channelModal.dialog}
