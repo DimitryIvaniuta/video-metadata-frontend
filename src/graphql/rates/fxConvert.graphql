@@ -1,0 +1,10 @@
+query FxConvert($from: String, $to: String, $amount: BigDecimal, $date: String) {
+    fxConvert(from: $from, to: $to, amount: $amount, date: $date) {
+        fromCurr
+        toCurr
+        amount
+        rate
+        result
+        date
+    }
+}

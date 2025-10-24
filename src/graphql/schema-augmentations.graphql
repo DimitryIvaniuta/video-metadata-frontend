@@ -1,0 +1,5 @@
+scalar Long
+scalar DateTime
+scalar ZonedDateTime
+scalar LocalDate
+scalar LocalTime

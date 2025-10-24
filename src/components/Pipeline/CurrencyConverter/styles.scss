@@ -1,0 +1,78 @@
+/* Bootstrap is already loaded globally via main.tsx.
+   Below we only add missing utilities / aliases used by the component. */
+
+/* Aliases to Bootstrap flex/justify utilities */
+.layout-row { display: flex; flex-direction: row; gap: 24px; }      /* ~ d-flex flex-row gap */
+.layout-column { display: flex; flex-direction: column; gap: 12px; }/* ~ d-flex flex-column gap */
+.justify-content-space-evenly { justify-content: space-evenly; }
+.justify-content-center { justify-content: center; }
+
+/* Custom sizing utilities not in Bootstrap’s default scale */
+.min-height { min-height: 320px; }
+.mt-75 { margin-top: 75px !important; }
+.pa-20 { padding: 20px !important; }
+.pa-30 { padding: 30px !important; }
+.w-35 { width: 35% !important; min-width: 280px; }
+.mb-10 { margin-bottom: 10px !important; }
+.mt-0 { margin-top: 0 !important; }
+.h-50 { height: 50px !important; }
+
+/* Keep inputs clean (Bootstrap handles most styles if you later add .form-control) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Responsive: stack columns on small screens */
+@media (max-width: 900px) {
+  .layout-row.justify-content-space-evenly {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .w-35 { width: 100% !important; }
+}
+/* Wrapper must not affect layout width */
+.ccv-select-wrap {
+  position: relative;
+  display: block;     /* not inline-block */
+  width: 100%;
+}
+
+/* Force select to occupy full row width and never shift */
+.ccv-select {
+  display: block;     /* ensures width applies */
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;          /* guard against any inherited margins */
+}
+
+/* Spinner overlays to the LEFT of the select, without pushing it */
+.ccv-select-wrap .ccv-spinner {
+  position: absolute;
+  left: -28px;                 /* visible to the left; tweak if needed */
+  top: 10%;
+  //transform: translateY(-40%);
+  width: 24px;
+  height: 24px;
+  pointer-events: none;        /* never blocks the select */
+  animation: ccv-rot 0.9s linear infinite;
+}
+
+/* Keep select from “jumping” when disabled (some themes change padding) */
+.ccv-select:disabled {
+  padding-right: inherit;
+  padding-left: inherit;
+}
+
+/* Spinner stroke animation (reuse if already declared) */
+.ccv-select-wrap .ccv-spinner .ccv-spinner-path {
+  stroke: #22c55e;
+  stroke-linecap: round;
+  animation: ccv-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes ccv-rot { 100% { transform: translateY(-50%) rotate(360deg); } }
+@keyframes ccv-dash {
+  0% { stroke-dasharray: 1,150; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90,150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90,150; stroke-dashoffset: -124; }
+}

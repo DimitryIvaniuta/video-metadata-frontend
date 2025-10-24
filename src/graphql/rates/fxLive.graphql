@@ -1,0 +1,6 @@
+query FxLive($source: String, $currencies: [String]) {
+    fxLive(source: $source, currencies: $currencies) {
+        source
+        quotes { symbol rate }
+    }
+}

@@ -1,0 +1,23 @@
+.live-card { width: 100%; max-width: 720px; margin: 0 auto; }
+
+.live-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;
+}
+
+.live-title {
+  display: inline-flex; align-items: center; gap: 8px; font-weight: 600;
+  .muted { opacity: .75; font-weight: 400; }
+}
+
+/* Inline spinner near title */
+.ccv-spinner { animation: ccv-rot .9s linear infinite; }
+.ccv-spinner-path { stroke: #22c55e; stroke-linecap: round; animation: ccv-dash 1.5s ease-in-out infinite; }
+
+@keyframes ccv-rot { 100% { transform: rotate(360deg); } }
+@keyframes ccv-dash {
+  0% { stroke-dasharray: 1,150; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90,150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90,150; stroke-dashoffset: -124; }
+}
+
+.live-foot { margin-top: 10px; font-size: .875rem; }

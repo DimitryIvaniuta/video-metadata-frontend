@@ -134,6 +134,8 @@ export const DashboardPage = () => {
         {isAdmin && <Link to="/users">• Manage Users</Link>}
         <Link to="/videos/import/channel">• Import Channel</Link>
         <Link to="/pipeline/debouncedinput">• Debounced Input</Link>
+        <Link to="/pipeline/currencyConverter">• Currency Converter</Link>
+        <Link to="/pipeline/liveRates">• Live Rates</Link>
 
         {/* MODAL */}
         {singleModal.dialog}

@@ -2,6 +2,7 @@ import "./styles/index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles/core.scss";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import { AuthProvider } from "./contexts/AuthContext.js";

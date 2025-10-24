@@ -10,6 +10,8 @@ import { VideoListPage } from "@/components/Videos";
 import { UserListPage } from "./components/Users/UserListPage";
 import { UserEditPage } from "./components/Users/UserEditPage";
 import {AutoCompleteApplication} from "@/components/Pipeline/DebounceInput/AutoCompleteApplication";
+import CurrencyConverter from "@/components/Pipeline/CurrencyConverter/CurrencyConverter";
+import LiveRates from "@/components/Pipeline/LiveRates/LiveRates";
 
 const RequireAuth = ({ roles }: { roles?: string[] }) => {
   const { token } = useAuth();
@@ -44,6 +46,8 @@ export default function App() {
             <Route path="videos" element={<VideoListPage />} />
             <Route path="videos/import" element={<ImportSinglePage />} />
             <Route path="pipeline/debouncedinput" element={<AutoCompleteApplication />} />
+            <Route path="pipeline/currencyConverter" element={<CurrencyConverter />} />
+            <Route path="pipeline/liveRates" element={<LiveRates />} />
             <Route
               path="videos/import/channel"
               element={<ImportChannelPage />}

@@ -1,7 +1,12 @@
 schema:
   - http://localhost:8080/api/graphql
-documents: src/graphql/**/*.graphql
+documents:
+  - src/graphql/**/*.graphql
 extensions:
   endpoints:
     default:
       url: http://localhost:8080/api/graphql
+      headers:
+        Content-Type: application/json
+        X-Tenant: admin
+        # Authorization: Bearer <your-dev-token>   # if needed

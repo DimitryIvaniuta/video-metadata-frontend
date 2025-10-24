@@ -15,8 +15,19 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  BigDecimal: { input: number; output: number; }
   DateTime: { input: string; output: string; }
   Long: { input: number; output: number; }
+};
+
+export type ConvertPayload = {
+  __typename?: 'ConvertPayload';
+  amount?: Maybe<Scalars['BigDecimal']['output']>;
+  date?: Maybe<Scalars['String']['output']>;
+  fromCurr?: Maybe<Scalars['String']['output']>;
+  rate?: Maybe<Scalars['BigDecimal']['output']>;
+  result?: Maybe<Scalars['BigDecimal']['output']>;
+  toCurr?: Maybe<Scalars['String']['output']>;
 };
 
 export type CreateUserInput = {
@@ -24,6 +35,30 @@ export type CreateUserInput = {
   password?: InputMaybe<Scalars['String']['input']>;
   roles?: InputMaybe<Array<InputMaybe<Role>>>;
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FxRateNode = {
+  __typename?: 'FxRateNode';
+  currency?: Maybe<Scalars['String']['output']>;
+  rate?: Maybe<Scalars['BigDecimal']['output']>;
+};
+
+export type FxRatesPayload = {
+  __typename?: 'FxRatesPayload';
+  base?: Maybe<Scalars['String']['output']>;
+  rates?: Maybe<Array<Maybe<FxRateNode>>>;
+};
+
+export type LiveQuoteNode = {
+  __typename?: 'LiveQuoteNode';
+  rate?: Maybe<Scalars['BigDecimal']['output']>;
+  symbol?: Maybe<Scalars['String']['output']>;
+};
+
+export type LiveRatesPayload = {
+  __typename?: 'LiveRatesPayload';
+  quotes?: Maybe<Array<Maybe<LiveQuoteNode>>>;
+  source?: Maybe<Scalars['String']['output']>;
 };
 
 export type Mutation = {
@@ -83,6 +118,9 @@ export type Query = {
   connectionUsersCount?: Maybe<Scalars['Long']['output']>;
   connectionVideos?: Maybe<VideoConnection>;
   connectionVideosCount?: Maybe<Scalars['Long']['output']>;
+  fxConvert?: Maybe<ConvertPayload>;
+  fxLive?: Maybe<LiveRatesPayload>;
+  fxRates?: Maybe<FxRatesPayload>;
   me?: Maybe<UserResponse>;
   user?: Maybe<UserResponse>;
   userslist?: Maybe<Array<Maybe<UserResponse>>>;
@@ -114,6 +152,26 @@ export type QueryConnectionVideosArgs = {
 
 export type QueryConnectionVideosCountArgs = {
   provider?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFxConvertArgs = {
+  amount?: InputMaybe<Scalars['BigDecimal']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+  from?: InputMaybe<Scalars['String']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFxLiveArgs = {
+  currencies?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  source?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFxRatesArgs = {
+  base?: InputMaybe<Scalars['String']['input']>;
+  symbols?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -253,6 +311,24 @@ export type SignUpMutationVariables = Exact<{
 
 
 export type SignUpMutation = { __typename?: 'Mutation', signUp?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, roles?: Array<Role | null> | null } | null };
+
+export type FxConvertQueryVariables = Exact<{
+  from?: InputMaybe<Scalars['String']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
+  amount?: InputMaybe<Scalars['BigDecimal']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type FxConvertQuery = { __typename?: 'Query', fxConvert?: { __typename?: 'ConvertPayload', fromCurr?: string | null, toCurr?: string | null, amount?: number | null, rate?: number | null, result?: number | null, date?: string | null } | null };
+
+export type FxLiveQueryVariables = Exact<{
+  source?: InputMaybe<Scalars['String']['input']>;
+  currencies?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type FxLiveQuery = { __typename?: 'Query', fxLive?: { __typename?: 'LiveRatesPayload', source?: string | null, quotes?: Array<{ __typename?: 'LiveQuoteNode', symbol?: string | null, rate?: number | null } | null> | null } | null };
 
 export type ConnectionUsersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -419,6 +495,99 @@ export function useSignUpMutation(baseOptions?: Apollo.MutationHookOptions<SignU
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
 export type SignUpMutationResult = Apollo.MutationResult<SignUpMutation>;
 export type SignUpMutationOptions = Apollo.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
+export const FxConvertDocument = gql`
+    query FxConvert($from: String, $to: String, $amount: BigDecimal, $date: String) {
+  fxConvert(from: $from, to: $to, amount: $amount, date: $date) {
+    fromCurr
+    toCurr
+    amount
+    rate
+    result
+    date
+  }
+}
+    `;
+
+/**
+ * __useFxConvertQuery__
+ *
+ * To run a query within a React component, call `useFxConvertQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFxConvertQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFxConvertQuery({
+ *   variables: {
+ *      from: // value for 'from'
+ *      to: // value for 'to'
+ *      amount: // value for 'amount'
+ *      date: // value for 'date'
+ *   },
+ * });
+ */
+export function useFxConvertQuery(baseOptions?: Apollo.QueryHookOptions<FxConvertQuery, FxConvertQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FxConvertQuery, FxConvertQueryVariables>(FxConvertDocument, options);
+      }
+export function useFxConvertLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FxConvertQuery, FxConvertQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FxConvertQuery, FxConvertQueryVariables>(FxConvertDocument, options);
+        }
+export function useFxConvertSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FxConvertQuery, FxConvertQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FxConvertQuery, FxConvertQueryVariables>(FxConvertDocument, options);
+        }
+export type FxConvertQueryHookResult = ReturnType<typeof useFxConvertQuery>;
+export type FxConvertLazyQueryHookResult = ReturnType<typeof useFxConvertLazyQuery>;
+export type FxConvertSuspenseQueryHookResult = ReturnType<typeof useFxConvertSuspenseQuery>;
+export type FxConvertQueryResult = Apollo.QueryResult<FxConvertQuery, FxConvertQueryVariables>;
+export const FxLiveDocument = gql`
+    query FxLive($source: String, $currencies: [String]) {
+  fxLive(source: $source, currencies: $currencies) {
+    source
+    quotes {
+      symbol
+      rate
+    }
+  }
+}
+    `;
+
+/**
+ * __useFxLiveQuery__
+ *
+ * To run a query within a React component, call `useFxLiveQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFxLiveQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFxLiveQuery({
+ *   variables: {
+ *      source: // value for 'source'
+ *      currencies: // value for 'currencies'
+ *   },
+ * });
+ */
+export function useFxLiveQuery(baseOptions?: Apollo.QueryHookOptions<FxLiveQuery, FxLiveQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FxLiveQuery, FxLiveQueryVariables>(FxLiveDocument, options);
+      }
+export function useFxLiveLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FxLiveQuery, FxLiveQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FxLiveQuery, FxLiveQueryVariables>(FxLiveDocument, options);
+        }
+export function useFxLiveSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FxLiveQuery, FxLiveQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FxLiveQuery, FxLiveQueryVariables>(FxLiveDocument, options);
+        }
+export type FxLiveQueryHookResult = ReturnType<typeof useFxLiveQuery>;
+export type FxLiveLazyQueryHookResult = ReturnType<typeof useFxLiveLazyQuery>;
+export type FxLiveSuspenseQueryHookResult = ReturnType<typeof useFxLiveSuspenseQuery>;
+export type FxLiveQueryResult = Apollo.QueryResult<FxLiveQuery, FxLiveQueryVariables>;
 export const ConnectionUsersDocument = gql`
     query ConnectionUsers($page: Int, $pageSize: Int, $search: String, $sortBy: UserSort, $sortDesc: Boolean) {
   connectionUsers(
