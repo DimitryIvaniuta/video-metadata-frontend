@@ -1,0 +1,131 @@
+/* src/components/NavBar/NavBar.scss */
+
+/* ===== Theme tokens (override safely without fighting Bootstrap) ===== */
+:root {
+  --nv-accent: rgba(255, 255, 255, 0.55);   /* active underline */
+  --nv-hover:  rgba(255, 255, 255, 0.85);   /* hover text tint */
+  --nv-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.navbar {
+  box-shadow: var(--nv-shadow);
+  backdrop-filter: saturate(120%) blur(4px);
+}
+
+/* Brand: subtle tracking and stronger contrast */
+.navbar-brand {
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+/* Toggler: make icon a bit clearer on dark backgrounds */
+.navbar-dark .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.2);
+
+  &:focus {
+    box-shadow: 0 0 0 .2rem rgba(255, 255, 255, 0.15);
+  }
+}
+
+.navbar-dark .navbar-toggler-icon {
+  filter: brightness(1.15) contrast(1.1);
+}
+
+/* Links: smooth hover + accessible focus ring */
+.navbar .nav-link {
+  position: relative;
+  transition: color .15s ease, opacity .15s ease, transform .15s ease;
+  outline: none;
+
+  &:hover {
+    color: var(--nv-hover);
+    opacity: .95;
+  }
+
+  &:focus-visible {
+    /* subtle focus indicator that works on dark bg */
+    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, .35);
+    border-radius: 2px;
+  }
+}
+
+/* Active state: refined underline, not a hard background */
+.navbar .nav-link.active {
+  font-weight: 600;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: .5rem;
+    right: .5rem;
+    bottom: .25rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--nv-accent);
+    pointer-events: none;
+  }
+}
+
+/* Spacing: nicer compact defaults on large screens */
+@media (min-width: 992px) {
+  .navbar-nav .nav-link {
+    padding-right: .85rem;
+    padding-left:  .85rem;
+  }
+}
+
+/* Right-side actions: align + gap without extra markup */
+.navbar .d-flex.gap-2 > * {
+  /* ensure equal vertical alignment with nav items */
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Button polish to read better on dark nav */
+.navbar .btn-outline-danger.btn-sm {
+  --bs-btn-color: #f8d7da;            /* light red text */
+  --bs-btn-border-color: #dc3545;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #dc3545;
+  --bs-btn-hover-border-color: #dc3545;
+  --bs-btn-focus-shadow-rgb: 220, 53, 69;
+}
+
+/* Container width: if you use container-fluid you’re fine;
+   if you switch to .container, this keeps things tight. */
+.navbar .container,
+.navbar .container-fluid {
+  min-height: 56px;
+}
+
+/* Reduce visual jump on collapse/expand */
+.navbar-collapse {
+  transition: height .2s ease, opacity .15s ease;
+}
+
+/* Optional: light theme adjustments if you ever switch to navbar-light */
+.navbar-light {
+  .nav-link.active::after {
+    background: rgba(0, 0, 0, 0.45);
+  }
+  .navbar-toggler {
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* High-contrast preference: make underline more visible */
+@media (prefers-contrast: more) {
+  .navbar .nav-link.active::after {
+    background: #fff;
+    height: 3px;
+  }
+}
+
+/* Reduced motion: disable fancy transitions */
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar .nav-link,
+  .navbar-collapse {
+    transition: none !important;
+  }
+}

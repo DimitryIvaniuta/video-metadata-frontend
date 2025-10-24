@@ -12,6 +12,7 @@ import { UserEditPage } from "./components/Users/UserEditPage";
 import {AutoCompleteApplication} from "@/components/Pipeline/DebounceInput/AutoCompleteApplication";
 import CurrencyConverter from "@/components/Pipeline/CurrencyConverter/CurrencyConverter";
 import LiveRates from "@/components/Pipeline/LiveRates/LiveRates";
+import About from "@/components/About/About";
 
 const RequireAuth = ({ roles }: { roles?: string[] }) => {
   const { token } = useAuth();
@@ -42,6 +43,7 @@ export default function App() {
           >
             {/* If `/` and logged in → dashboard */}
             <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="about" element={<About />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="videos" element={<VideoListPage />} />
             <Route path="videos/import" element={<ImportSinglePage />} />
