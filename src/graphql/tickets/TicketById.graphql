@@ -1,0 +1,19 @@
+query TicketById($id: Long!, $includeComments: Boolean! = true) {
+    ticket(id: $id, includeComments: $includeComments) {
+        id
+        title
+        description
+        status
+        priority
+        reporterId
+        assigneeId
+        createdAt
+        updatedAt
+        comments @include(if: $includeComments) {
+            id
+            authorId
+            body
+            createdAt
+        }
+    }
+}

@@ -1,0 +1,12 @@
+mutation CreateTicket($reporterId: Long!, $input: TicketCreateInput!) {
+    createTicket(reporterId: $reporterId, input: $input) {
+        id
+        title
+        status
+        priority
+        reporterId
+        assigneeId
+        createdAt
+        updatedAt
+    }
+}

@@ -1,0 +1,8 @@
+mutation AddTicketComment($authorId: Long!, $input: TicketCommentInput!) {
+    addTicketComment(authorId: $authorId, input: $input) {
+        id
+        authorId
+        body
+        createdAt
+    }
+}

@@ -1,0 +1,31 @@
+query TicketsConnection(
+    $page: Int
+    $pageSize: Int
+    $search: String
+    $status: TicketStatus
+    $assigneeId: Long
+    $reporterId: Long
+) {
+    connectionTickets(
+        page: $page
+        pageSize: $pageSize
+        search: $search
+        status: $status
+        assigneeId: $assigneeId
+        reporterId: $reporterId
+    ) {
+        page
+        pageSize
+        total
+        items {
+            id
+            title
+            status
+            priority
+            reporterId
+            assigneeId
+            createdAt
+            updatedAt
+        }
+    }
+}

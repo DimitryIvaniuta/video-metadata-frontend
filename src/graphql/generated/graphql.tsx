@@ -63,6 +63,8 @@ export type LiveRatesPayload = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addTicketComment?: Maybe<TicketCommentNode>;
+  createTicket?: Maybe<TicketNode>;
   createUser?: Maybe<UserResponse>;
   deleteUser?: Maybe<Scalars['Boolean']['output']>;
   importVideo?: Maybe<VideoResponse>;
@@ -70,7 +72,20 @@ export type Mutation = {
   login?: Maybe<TokenResponse>;
   refresh?: Maybe<TokenResponse>;
   signUp?: Maybe<UserResponse>;
+  updateTicket?: Maybe<TicketNode>;
   updateUser?: Maybe<UserResponse>;
+};
+
+
+export type MutationAddTicketCommentArgs = {
+  authorId?: InputMaybe<Scalars['Long']['input']>;
+  input?: InputMaybe<TicketCommentInput>;
+};
+
+
+export type MutationCreateTicketArgs = {
+  input?: InputMaybe<TicketCreateInput>;
+  reporterId?: InputMaybe<Scalars['Long']['input']>;
 };
 
 
@@ -107,6 +122,11 @@ export type MutationSignUpArgs = {
 };
 
 
+export type MutationUpdateTicketArgs = {
+  input?: InputMaybe<TicketUpdateInput>;
+};
+
+
 export type MutationUpdateUserArgs = {
   input?: InputMaybe<UpdateUserInput>;
 };
@@ -114,6 +134,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: 'Query';
   _status?: Maybe<Scalars['String']['output']>;
+  connectionTickets?: Maybe<TicketConnection>;
   connectionUsers?: Maybe<UserConnection>;
   connectionUsersCount?: Maybe<Scalars['Long']['output']>;
   connectionVideos?: Maybe<VideoConnection>;
@@ -122,8 +143,19 @@ export type Query = {
   fxLive?: Maybe<LiveRatesPayload>;
   fxRates?: Maybe<FxRatesPayload>;
   me?: Maybe<UserResponse>;
+  ticket?: Maybe<TicketNode>;
   user?: Maybe<UserResponse>;
   userslist?: Maybe<Array<Maybe<UserResponse>>>;
+};
+
+
+export type QueryConnectionTicketsArgs = {
+  assigneeId?: InputMaybe<Scalars['Long']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  reporterId?: InputMaybe<Scalars['Long']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<TicketStatus>;
 };
 
 
@@ -175,6 +207,12 @@ export type QueryFxRatesArgs = {
 };
 
 
+export type QueryTicketArgs = {
+  id?: InputMaybe<Scalars['Long']['input']>;
+  includeComments?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type QueryUserArgs = {
   id?: InputMaybe<Scalars['Long']['input']>;
 };
@@ -194,6 +232,66 @@ export type SignUpInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TicketCommentInput = {
+  body?: InputMaybe<Scalars['String']['input']>;
+  ticketId?: InputMaybe<Scalars['Long']['input']>;
+};
+
+export type TicketCommentNode = {
+  __typename?: 'TicketCommentNode';
+  authorId?: Maybe<Scalars['Long']['output']>;
+  body?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+};
+
+export type TicketConnection = {
+  __typename?: 'TicketConnection';
+  items?: Maybe<Array<Maybe<TicketNode>>>;
+  page?: Maybe<Scalars['Int']['output']>;
+  pageSize?: Maybe<Scalars['Int']['output']>;
+  total?: Maybe<Scalars['Long']['output']>;
+};
+
+export type TicketCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  priority?: InputMaybe<TicketPriority>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TicketNode = {
+  __typename?: 'TicketNode';
+  assigneeId?: Maybe<Scalars['Long']['output']>;
+  comments?: Maybe<Array<Maybe<TicketCommentNode>>>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  priority?: Maybe<TicketPriority>;
+  reporterId?: Maybe<Scalars['Long']['output']>;
+  status?: Maybe<TicketStatus>;
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export enum TicketPriority {
+  High = 'HIGH',
+  Low = 'LOW',
+  Medium = 'MEDIUM'
+}
+
+export enum TicketStatus {
+  Closed = 'CLOSED',
+  InProgress = 'IN_PROGRESS',
+  Open = 'OPEN',
+  Resolved = 'RESOLVED'
+}
+
+export type TicketUpdateInput = {
+  assigneeId?: InputMaybe<Scalars['Long']['input']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
+  status?: InputMaybe<TicketStatus>;
 };
 
 export type TokenResponse = {
@@ -329,6 +427,49 @@ export type FxLiveQueryVariables = Exact<{
 
 
 export type FxLiveQuery = { __typename?: 'Query', fxLive?: { __typename?: 'LiveRatesPayload', source?: string | null, quotes?: Array<{ __typename?: 'LiveQuoteNode', symbol?: string | null, rate?: number | null } | null> | null } | null };
+
+export type AddTicketCommentMutationVariables = Exact<{
+  authorId: Scalars['Long']['input'];
+  input: TicketCommentInput;
+}>;
+
+
+export type AddTicketCommentMutation = { __typename?: 'Mutation', addTicketComment?: { __typename?: 'TicketCommentNode', id?: string | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null };
+
+export type CreateTicketMutationVariables = Exact<{
+  reporterId: Scalars['Long']['input'];
+  input: TicketCreateInput;
+}>;
+
+
+export type CreateTicketMutation = { __typename?: 'Mutation', createTicket?: { __typename?: 'TicketNode', id?: string | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null } | null };
+
+export type TicketByIdQueryVariables = Exact<{
+  id: Scalars['Long']['input'];
+  includeComments?: Scalars['Boolean']['input'];
+}>;
+
+
+export type TicketByIdQuery = { __typename?: 'Query', ticket?: { __typename?: 'TicketNode', id?: string | null, title?: string | null, description?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null, comments?: Array<{ __typename?: 'TicketCommentNode', id?: string | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null> | null } | null };
+
+export type TicketsConnectionQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<TicketStatus>;
+  assigneeId?: InputMaybe<Scalars['Long']['input']>;
+  reporterId?: InputMaybe<Scalars['Long']['input']>;
+}>;
+
+
+export type TicketsConnectionQuery = { __typename?: 'Query', connectionTickets?: { __typename?: 'TicketConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'TicketNode', id?: string | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null } | null> | null } | null };
+
+export type UpdateTicketMutationVariables = Exact<{
+  input: TicketUpdateInput;
+}>;
+
+
+export type UpdateTicketMutation = { __typename?: 'Mutation', updateTicket?: { __typename?: 'TicketNode', id?: string | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, assigneeId?: number | null, updatedAt?: string | null } | null };
 
 export type ConnectionUsersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -588,6 +729,241 @@ export type FxLiveQueryHookResult = ReturnType<typeof useFxLiveQuery>;
 export type FxLiveLazyQueryHookResult = ReturnType<typeof useFxLiveLazyQuery>;
 export type FxLiveSuspenseQueryHookResult = ReturnType<typeof useFxLiveSuspenseQuery>;
 export type FxLiveQueryResult = Apollo.QueryResult<FxLiveQuery, FxLiveQueryVariables>;
+export const AddTicketCommentDocument = gql`
+    mutation AddTicketComment($authorId: Long!, $input: TicketCommentInput!) {
+  addTicketComment(authorId: $authorId, input: $input) {
+    id
+    authorId
+    body
+    createdAt
+  }
+}
+    `;
+export type AddTicketCommentMutationFn = Apollo.MutationFunction<AddTicketCommentMutation, AddTicketCommentMutationVariables>;
+
+/**
+ * __useAddTicketCommentMutation__
+ *
+ * To run a mutation, you first call `useAddTicketCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddTicketCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addTicketCommentMutation, { data, loading, error }] = useAddTicketCommentMutation({
+ *   variables: {
+ *      authorId: // value for 'authorId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddTicketCommentMutation(baseOptions?: Apollo.MutationHookOptions<AddTicketCommentMutation, AddTicketCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddTicketCommentMutation, AddTicketCommentMutationVariables>(AddTicketCommentDocument, options);
+      }
+export type AddTicketCommentMutationHookResult = ReturnType<typeof useAddTicketCommentMutation>;
+export type AddTicketCommentMutationResult = Apollo.MutationResult<AddTicketCommentMutation>;
+export type AddTicketCommentMutationOptions = Apollo.BaseMutationOptions<AddTicketCommentMutation, AddTicketCommentMutationVariables>;
+export const CreateTicketDocument = gql`
+    mutation CreateTicket($reporterId: Long!, $input: TicketCreateInput!) {
+  createTicket(reporterId: $reporterId, input: $input) {
+    id
+    title
+    status
+    priority
+    reporterId
+    assigneeId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateTicketMutationFn = Apollo.MutationFunction<CreateTicketMutation, CreateTicketMutationVariables>;
+
+/**
+ * __useCreateTicketMutation__
+ *
+ * To run a mutation, you first call `useCreateTicketMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTicketMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTicketMutation, { data, loading, error }] = useCreateTicketMutation({
+ *   variables: {
+ *      reporterId: // value for 'reporterId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTicketMutation(baseOptions?: Apollo.MutationHookOptions<CreateTicketMutation, CreateTicketMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTicketMutation, CreateTicketMutationVariables>(CreateTicketDocument, options);
+      }
+export type CreateTicketMutationHookResult = ReturnType<typeof useCreateTicketMutation>;
+export type CreateTicketMutationResult = Apollo.MutationResult<CreateTicketMutation>;
+export type CreateTicketMutationOptions = Apollo.BaseMutationOptions<CreateTicketMutation, CreateTicketMutationVariables>;
+export const TicketByIdDocument = gql`
+    query TicketById($id: Long!, $includeComments: Boolean! = true) {
+  ticket(id: $id, includeComments: $includeComments) {
+    id
+    title
+    description
+    status
+    priority
+    reporterId
+    assigneeId
+    createdAt
+    updatedAt
+    comments @include(if: $includeComments) {
+      id
+      authorId
+      body
+      createdAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useTicketByIdQuery__
+ *
+ * To run a query within a React component, call `useTicketByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTicketByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTicketByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      includeComments: // value for 'includeComments'
+ *   },
+ * });
+ */
+export function useTicketByIdQuery(baseOptions: Apollo.QueryHookOptions<TicketByIdQuery, TicketByIdQueryVariables> & ({ variables: TicketByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TicketByIdQuery, TicketByIdQueryVariables>(TicketByIdDocument, options);
+      }
+export function useTicketByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TicketByIdQuery, TicketByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TicketByIdQuery, TicketByIdQueryVariables>(TicketByIdDocument, options);
+        }
+export function useTicketByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TicketByIdQuery, TicketByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TicketByIdQuery, TicketByIdQueryVariables>(TicketByIdDocument, options);
+        }
+export type TicketByIdQueryHookResult = ReturnType<typeof useTicketByIdQuery>;
+export type TicketByIdLazyQueryHookResult = ReturnType<typeof useTicketByIdLazyQuery>;
+export type TicketByIdSuspenseQueryHookResult = ReturnType<typeof useTicketByIdSuspenseQuery>;
+export type TicketByIdQueryResult = Apollo.QueryResult<TicketByIdQuery, TicketByIdQueryVariables>;
+export const TicketsConnectionDocument = gql`
+    query TicketsConnection($page: Int, $pageSize: Int, $search: String, $status: TicketStatus, $assigneeId: Long, $reporterId: Long) {
+  connectionTickets(
+    page: $page
+    pageSize: $pageSize
+    search: $search
+    status: $status
+    assigneeId: $assigneeId
+    reporterId: $reporterId
+  ) {
+    page
+    pageSize
+    total
+    items {
+      id
+      title
+      status
+      priority
+      reporterId
+      assigneeId
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useTicketsConnectionQuery__
+ *
+ * To run a query within a React component, call `useTicketsConnectionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTicketsConnectionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTicketsConnectionQuery({
+ *   variables: {
+ *      page: // value for 'page'
+ *      pageSize: // value for 'pageSize'
+ *      search: // value for 'search'
+ *      status: // value for 'status'
+ *      assigneeId: // value for 'assigneeId'
+ *      reporterId: // value for 'reporterId'
+ *   },
+ * });
+ */
+export function useTicketsConnectionQuery(baseOptions?: Apollo.QueryHookOptions<TicketsConnectionQuery, TicketsConnectionQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TicketsConnectionQuery, TicketsConnectionQueryVariables>(TicketsConnectionDocument, options);
+      }
+export function useTicketsConnectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TicketsConnectionQuery, TicketsConnectionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TicketsConnectionQuery, TicketsConnectionQueryVariables>(TicketsConnectionDocument, options);
+        }
+export function useTicketsConnectionSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TicketsConnectionQuery, TicketsConnectionQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TicketsConnectionQuery, TicketsConnectionQueryVariables>(TicketsConnectionDocument, options);
+        }
+export type TicketsConnectionQueryHookResult = ReturnType<typeof useTicketsConnectionQuery>;
+export type TicketsConnectionLazyQueryHookResult = ReturnType<typeof useTicketsConnectionLazyQuery>;
+export type TicketsConnectionSuspenseQueryHookResult = ReturnType<typeof useTicketsConnectionSuspenseQuery>;
+export type TicketsConnectionQueryResult = Apollo.QueryResult<TicketsConnectionQuery, TicketsConnectionQueryVariables>;
+export const UpdateTicketDocument = gql`
+    mutation UpdateTicket($input: TicketUpdateInput!) {
+  updateTicket(input: $input) {
+    id
+    title
+    status
+    priority
+    assigneeId
+    updatedAt
+  }
+}
+    `;
+export type UpdateTicketMutationFn = Apollo.MutationFunction<UpdateTicketMutation, UpdateTicketMutationVariables>;
+
+/**
+ * __useUpdateTicketMutation__
+ *
+ * To run a mutation, you first call `useUpdateTicketMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTicketMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTicketMutation, { data, loading, error }] = useUpdateTicketMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTicketMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTicketMutation, UpdateTicketMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTicketMutation, UpdateTicketMutationVariables>(UpdateTicketDocument, options);
+      }
+export type UpdateTicketMutationHookResult = ReturnType<typeof useUpdateTicketMutation>;
+export type UpdateTicketMutationResult = Apollo.MutationResult<UpdateTicketMutation>;
+export type UpdateTicketMutationOptions = Apollo.BaseMutationOptions<UpdateTicketMutation, UpdateTicketMutationVariables>;
 export const ConnectionUsersDocument = gql`
     query ConnectionUsers($page: Int, $pageSize: Int, $search: String, $sortBy: UserSort, $sortDesc: Boolean) {
   connectionUsers(
