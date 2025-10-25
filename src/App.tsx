@@ -13,9 +13,9 @@ import {AutoCompleteApplication} from "@/components/Pipeline/DebounceInput/AutoC
 import CurrencyConverter from "@/components/Pipeline/CurrencyConverter/CurrencyConverter";
 import LiveRates from "@/components/Pipeline/LiveRates/LiveRates";
 import About from "@/components/About/About";
-import NewTicketPage from "@/components/Pipeline/Tickets/NewTicketPage/NewTicketPage";
-import TicketDetailsPage from "@/components/Pipeline/Tickets/TicketDetailsPage/TicketDetailsPage";
 import TicketsPage from "@/components/Pipeline/Tickets/TicketsPage/TicketsPage";
+import {NewTicketPage} from "@/components/Pipeline/Tickets/NewTicketPage";
+import {TicketDetailsPage} from "@/components/Pipeline/Tickets/TicketDetailsPage";
 
 const RequireAuth = ({ roles }: { roles?: string[] }) => {
   const { token } = useAuth();
