@@ -136,6 +136,7 @@ export const DashboardPage = () => {
         <Link to="/pipeline/debouncedinput">• Debounced Input</Link>
         <Link to="/pipeline/currencyConverter">• Currency Converter</Link>
         <Link to="/pipeline/liveRates">• Live Rates</Link>
+        <Link to="/pipeline/tickets">• Tickets</Link>
 
         {/* MODAL */}
         {singleModal.dialog}

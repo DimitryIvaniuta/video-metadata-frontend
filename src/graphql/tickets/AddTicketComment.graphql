@@ -1,5 +1,5 @@
-mutation AddTicketComment($authorId: Long!, $input: TicketCommentInput!) {
-    addTicketComment(authorId: $authorId, input: $input) {
+mutation AddTicketComment($input: TicketCommentInput!) {
+    addTicketComment(input: $input) {
         id
         authorId
         body

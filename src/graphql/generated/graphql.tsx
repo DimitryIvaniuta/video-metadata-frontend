@@ -78,14 +78,12 @@ export type Mutation = {
 
 
 export type MutationAddTicketCommentArgs = {
-  authorId?: InputMaybe<Scalars['Long']['input']>;
   input?: InputMaybe<TicketCommentInput>;
 };
 
 
 export type MutationCreateTicketArgs = {
   input?: InputMaybe<TicketCreateInput>;
-  reporterId?: InputMaybe<Scalars['Long']['input']>;
 };
 
 
@@ -244,7 +242,7 @@ export type TicketCommentNode = {
   authorId?: Maybe<Scalars['Long']['output']>;
   body?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['Long']['output']>;
 };
 
 export type TicketConnection = {
@@ -267,7 +265,7 @@ export type TicketNode = {
   comments?: Maybe<Array<Maybe<TicketCommentNode>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['Long']['output']>;
   priority?: Maybe<TicketPriority>;
   reporterId?: Maybe<Scalars['Long']['output']>;
   status?: Maybe<TicketStatus>;
@@ -320,7 +318,7 @@ export type UserResponse = {
   __typename?: 'UserResponse';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['Long']['output']>;
   lastLoginAt?: Maybe<Scalars['DateTime']['output']>;
   roles?: Maybe<Array<Maybe<Role>>>;
   status?: Maybe<UserStatus>;
@@ -381,7 +379,7 @@ export type VideoResponse = {
   description?: Maybe<Scalars['String']['output']>;
   durationMs?: Maybe<Scalars['Long']['output']>;
   externalVideoId?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['Long']['output']>;
   source?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
   uploadDate?: Maybe<Scalars['DateTime']['output']>;
@@ -408,7 +406,7 @@ export type SignUpMutationVariables = Exact<{
 }>;
 
 
-export type SignUpMutation = { __typename?: 'Mutation', signUp?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, roles?: Array<Role | null> | null } | null };
+export type SignUpMutation = { __typename?: 'Mutation', signUp?: { __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, roles?: Array<Role | null> | null } | null };
 
 export type FxConvertQueryVariables = Exact<{
   from?: InputMaybe<Scalars['String']['input']>;
@@ -429,20 +427,18 @@ export type FxLiveQueryVariables = Exact<{
 export type FxLiveQuery = { __typename?: 'Query', fxLive?: { __typename?: 'LiveRatesPayload', source?: string | null, quotes?: Array<{ __typename?: 'LiveQuoteNode', symbol?: string | null, rate?: number | null } | null> | null } | null };
 
 export type AddTicketCommentMutationVariables = Exact<{
-  authorId: Scalars['Long']['input'];
   input: TicketCommentInput;
 }>;
 
 
-export type AddTicketCommentMutation = { __typename?: 'Mutation', addTicketComment?: { __typename?: 'TicketCommentNode', id?: string | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null };
+export type AddTicketCommentMutation = { __typename?: 'Mutation', addTicketComment?: { __typename?: 'TicketCommentNode', id?: number | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null };
 
 export type CreateTicketMutationVariables = Exact<{
-  reporterId: Scalars['Long']['input'];
   input: TicketCreateInput;
 }>;
 
 
-export type CreateTicketMutation = { __typename?: 'Mutation', createTicket?: { __typename?: 'TicketNode', id?: string | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null } | null };
+export type CreateTicketMutation = { __typename?: 'Mutation', createTicket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null } | null };
 
 export type TicketByIdQueryVariables = Exact<{
   id: Scalars['Long']['input'];
@@ -450,7 +446,7 @@ export type TicketByIdQueryVariables = Exact<{
 }>;
 
 
-export type TicketByIdQuery = { __typename?: 'Query', ticket?: { __typename?: 'TicketNode', id?: string | null, title?: string | null, description?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null, comments?: Array<{ __typename?: 'TicketCommentNode', id?: string | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null> | null } | null };
+export type TicketByIdQuery = { __typename?: 'Query', ticket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, description?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null, comments?: Array<{ __typename?: 'TicketCommentNode', id?: number | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null> | null } | null };
 
 export type TicketsConnectionQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -462,14 +458,14 @@ export type TicketsConnectionQueryVariables = Exact<{
 }>;
 
 
-export type TicketsConnectionQuery = { __typename?: 'Query', connectionTickets?: { __typename?: 'TicketConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'TicketNode', id?: string | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null } | null> | null } | null };
+export type TicketsConnectionQuery = { __typename?: 'Query', connectionTickets?: { __typename?: 'TicketConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'TicketNode', id?: number | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null } | null> | null } | null };
 
 export type UpdateTicketMutationVariables = Exact<{
   input: TicketUpdateInput;
 }>;
 
 
-export type UpdateTicketMutation = { __typename?: 'Mutation', updateTicket?: { __typename?: 'TicketNode', id?: string | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, assigneeId?: number | null, updatedAt?: string | null } | null };
+export type UpdateTicketMutation = { __typename?: 'Mutation', updateTicket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, assigneeId?: number | null, updatedAt?: string | null } | null };
 
 export type ConnectionUsersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -480,14 +476,14 @@ export type ConnectionUsersQueryVariables = Exact<{
 }>;
 
 
-export type ConnectionUsersQuery = { __typename?: 'Query', connectionUsers?: { __typename?: 'UserConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null } | null> | null } | null };
+export type ConnectionUsersQuery = { __typename?: 'Query', connectionUsers?: { __typename?: 'UserConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null } | null> | null } | null };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
 }>;
 
 
-export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
+export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
 
 export type DeleteUserMutationVariables = Exact<{
   id: Scalars['Long']['input'];
@@ -499,14 +495,14 @@ export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser?: boolean
 export type GetMeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeUserQuery = { __typename?: 'Query', me?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null } | null };
+export type GetMeUserQuery = { __typename?: 'Query', me?: { __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null } | null };
 
 export type GetUserQueryVariables = Exact<{
   id: Scalars['Long']['input'];
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null, roles?: Array<Role | null> | null } | null };
+export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, createdAt?: string | null, updatedAt?: string | null, lastLoginAt?: string | null, roles?: Array<Role | null> | null } | null };
 
 export type GetUsersCountQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
@@ -521,14 +517,14 @@ export type ListUsersQueryVariables = Exact<{
 }>;
 
 
-export type ListUsersQuery = { __typename?: 'Query', userslist?: Array<{ __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null> | null };
+export type ListUsersQuery = { __typename?: 'Query', userslist?: Array<{ __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null> | null };
 
 export type UpdateUserMutationVariables = Exact<{
   input: UpdateUserInput;
 }>;
 
 
-export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'UserResponse', id?: string | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null };
 
 export type GetConnectionVideosQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -539,7 +535,7 @@ export type GetConnectionVideosQueryVariables = Exact<{
 }>;
 
 
-export type GetConnectionVideosQuery = { __typename?: 'Query', connectionVideos?: { __typename?: 'VideoConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'VideoResponse', id?: string | null, title?: string | null, source?: string | null, durationMs?: number | null, description?: string | null, videoCategory?: VideoCategory | null, videoProvider?: VideoProvider | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null } | null };
+export type GetConnectionVideosQuery = { __typename?: 'Query', connectionVideos?: { __typename?: 'VideoConnection', page?: number | null, pageSize?: number | null, total?: number | null, items?: Array<{ __typename?: 'VideoResponse', id?: number | null, title?: string | null, source?: string | null, durationMs?: number | null, description?: string | null, videoCategory?: VideoCategory | null, videoProvider?: VideoProvider | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null } | null };
 
 export type GetVideosCountQueryVariables = Exact<{
   provider?: InputMaybe<Scalars['String']['input']>;
@@ -554,7 +550,7 @@ export type ImportVideoMutationVariables = Exact<{
 }>;
 
 
-export type ImportVideoMutation = { __typename?: 'Mutation', importVideo?: { __typename?: 'VideoResponse', id?: string | null, title?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null, videoProvider?: VideoProvider | null } | null };
+export type ImportVideoMutation = { __typename?: 'Mutation', importVideo?: { __typename?: 'VideoResponse', id?: number | null, title?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null, videoProvider?: VideoProvider | null } | null };
 
 export type ImportVideosByPublisherMutationVariables = Exact<{
   provider: VideoProvider;
@@ -562,7 +558,7 @@ export type ImportVideosByPublisherMutationVariables = Exact<{
 }>;
 
 
-export type ImportVideosByPublisherMutation = { __typename?: 'Mutation', importVideosByPublisher?: Array<{ __typename?: 'VideoResponse', id?: string | null, title?: string | null, source?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null };
+export type ImportVideosByPublisherMutation = { __typename?: 'Mutation', importVideosByPublisher?: Array<{ __typename?: 'VideoResponse', id?: number | null, title?: string | null, source?: string | null, durationMs?: number | null, description?: string | null, externalVideoId?: string | null, uploadDate?: string | null, createdUserId?: number | null } | null> | null };
 
 
 export const LoginDocument = gql`
@@ -730,8 +726,8 @@ export type FxLiveLazyQueryHookResult = ReturnType<typeof useFxLiveLazyQuery>;
 export type FxLiveSuspenseQueryHookResult = ReturnType<typeof useFxLiveSuspenseQuery>;
 export type FxLiveQueryResult = Apollo.QueryResult<FxLiveQuery, FxLiveQueryVariables>;
 export const AddTicketCommentDocument = gql`
-    mutation AddTicketComment($authorId: Long!, $input: TicketCommentInput!) {
-  addTicketComment(authorId: $authorId, input: $input) {
+    mutation AddTicketComment($input: TicketCommentInput!) {
+  addTicketComment(input: $input) {
     id
     authorId
     body
@@ -754,7 +750,6 @@ export type AddTicketCommentMutationFn = Apollo.MutationFunction<AddTicketCommen
  * @example
  * const [addTicketCommentMutation, { data, loading, error }] = useAddTicketCommentMutation({
  *   variables: {
- *      authorId: // value for 'authorId'
  *      input: // value for 'input'
  *   },
  * });
@@ -767,8 +762,8 @@ export type AddTicketCommentMutationHookResult = ReturnType<typeof useAddTicketC
 export type AddTicketCommentMutationResult = Apollo.MutationResult<AddTicketCommentMutation>;
 export type AddTicketCommentMutationOptions = Apollo.BaseMutationOptions<AddTicketCommentMutation, AddTicketCommentMutationVariables>;
 export const CreateTicketDocument = gql`
-    mutation CreateTicket($reporterId: Long!, $input: TicketCreateInput!) {
-  createTicket(reporterId: $reporterId, input: $input) {
+    mutation CreateTicket($input: TicketCreateInput!) {
+  createTicket(input: $input) {
     id
     title
     status
@@ -795,7 +790,6 @@ export type CreateTicketMutationFn = Apollo.MutationFunction<CreateTicketMutatio
  * @example
  * const [createTicketMutation, { data, loading, error }] = useCreateTicketMutation({
  *   variables: {
- *      reporterId: // value for 'reporterId'
  *      input: // value for 'input'
  *   },
  * });

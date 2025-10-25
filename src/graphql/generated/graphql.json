@@ -270,17 +270,6 @@
       },
       {
         "kind": "SCALAR",
-        "name": "ID",
-        "description": "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted as an ID.",
-        "isOneOf": null,
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "SCALAR",
         "name": "Int",
         "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
         "isOneOf": null,
@@ -388,18 +377,6 @@
             "description": null,
             "args": [
               {
-                "name": "authorId",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Long",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "input",
                 "description": null,
                 "type": {
@@ -430,18 +407,6 @@
                 "type": {
                   "kind": "INPUT_OBJECT",
                   "name": "TicketCreateInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "reporterId",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Long",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -1445,7 +1410,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "ID",
+              "name": "Long",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1633,7 +1598,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "ID",
+              "name": "Long",
               "ofType": null
             },
             "isDeprecated": false,
@@ -2031,7 +1996,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "ID",
+              "name": "Long",
               "ofType": null
             },
             "isDeprecated": false,
@@ -2441,7 +2406,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "ID",
+              "name": "Long",
               "ofType": null
             },
             "isDeprecated": false,
