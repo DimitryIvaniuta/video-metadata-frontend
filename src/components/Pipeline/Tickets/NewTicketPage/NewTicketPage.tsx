@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, {FormEvent, useCallback, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     TicketPriority,
@@ -95,6 +95,12 @@ export const NewTicketPage = () => {
         // Navigate back to where user came from
         navigate(returnTo, { replace: true });
     };
+
+
+    // CLOSE button handler
+    const handleClose = useCallback(() => {
+        navigate("/pipeline/tickets", { replace: true });
+    }, [navigate]);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -202,14 +208,27 @@ export const NewTicketPage = () => {
                         </div>
                     )}
 
-                    {/* Submit */}
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="btn-create-ticket"
-                    >
-                        {loading ? "Creating…" : "Create Ticket"}
-                    </button>
+                    {/* Actions row */}
+                    <div className="d-flex justify-content-end gap-2">
+                        {/* ⬅ CLOSE / CANCEL */}
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={handleClose}
+                            disabled={loading}
+                        >
+                            Close
+                        </button>
+
+                        {/* CREATE */}
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={loading}
+                        >
+                            {loading ? "Creating…" : "Create Ticket"}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

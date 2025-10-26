@@ -36,7 +36,7 @@ export const TicketDetailsPage = () => {
     // <Link to={`/tickets/${t.id}`} state={{ returnTo: location.pathname + location.search }} />
     const location = useLocation();
     const returnTo: string =
-        (location.state && (location.state as any).returnTo) || "/tickets";
+        (location.state && (location.state as any).returnTo) || "/pipeline/tickets";
 
     const {
         ticket,
@@ -63,6 +63,7 @@ export const TicketDetailsPage = () => {
 
         handleUpdateSubmit,
         handleCommentSubmit,
+        handleClose,
 
         savingTicket,
         errorUpdate,
@@ -131,7 +132,37 @@ export const TicketDetailsPage = () => {
             <div className="ticket-card">
                 <div className="ticket-header">
                     <div className="ticket-header-main">
-                        <h3 className="ticket-title">{ticket.title || "(Untitled)"}</h3>
+
+                        {/* Top Right Actions */}
+                        <div className="d-flex gap-2">
+                            {/* CLOSE */}
+                            <button
+                                className="btn btn-outline-secondary btn-sm"
+                                onClick={handleClose}
+                                disabled={loadingTicket}
+                                type="button"
+                            >
+                                Close
+                            </button>
+
+                            {/* SAVE CHANGES */}
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                disabled={savingTicket}
+                                onClick={() =>
+                                    handleSaveTicket({
+                                        status: editStatus,
+                                        assigneeId: editAssigneeId,
+                                    })
+                                }
+                                title="Save and return to tickets list"
+                            >
+                                {savingTicket ? "Saving…" : "Save Changes"}
+                            </button>
+                        </div>
+                        <h3 className="ticket-title mt-3">{ticket.title || "(Untitled)"}</h3>
+
                         <div className="ticket-meta-line">
                           <span className="badge border">
                             Status: {ticket.status ?? "UNKNOWN"}
@@ -295,18 +326,6 @@ export const TicketDetailsPage = () => {
                                             : "none"}
                                     </small>
                                 </div>
-                            </div>
-
-                            {/* SAVE CHANGES */}
-                            <div className="col-12 col-md-3 d-flex align-items-end">
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary w-100"
-                                    disabled={savingTicket}
-                                    title="Save and return to tickets list"
-                                >
-                                    {savingTicket ? "Saving…" : "Save Changes"}
-                                </button>
                             </div>
                         </div>
                     </form>

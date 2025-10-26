@@ -59,6 +59,7 @@ export interface UseTicketDetailsActionsResult {
     // submit handlers
     handleUpdateSubmit: (e: React.FormEvent) => void;
     handleCommentSubmit: (e: React.FormEvent) => void;
+    handleClose: () => void;
 
     // mutation states / errors
     savingTicket: boolean;
@@ -251,7 +252,10 @@ export function useTicketDetailsActions(
                 // GraphQL error is surfaced by errorComment
             });
     };
-
+    // CLOSE handler
+    const handleClose = useCallback(() => {
+        navigate("/pipeline/tickets", { replace: true });
+    }, [navigate]);
     // Save Changes:
     //  - updateTicket mutation
     //  - refetch ticket list (done via refetchQueries)
@@ -306,6 +310,7 @@ export function useTicketDetailsActions(
 
         handleUpdateSubmit,
         handleCommentSubmit,
+        handleClose,
 
         savingTicket,
         errorUpdate,
