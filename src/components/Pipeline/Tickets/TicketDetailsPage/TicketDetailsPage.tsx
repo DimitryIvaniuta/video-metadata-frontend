@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {useParams, useLocation, useNavigate} from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 import { TicketStatus } from "@/graphql/generated/graphql";
 import {
@@ -28,7 +28,7 @@ function toErrorMessage(err: unknown): string {
     }
 }
 
-export const TicketDetailsPage = () => {
+export const TicketDetailsPage: React.FC = () => {
     const { ticketId } = useParams<{ ticketId: string }>();
     const ticketIdNum = ticketId ? Number(ticketId) : NaN;
 
@@ -36,7 +36,8 @@ export const TicketDetailsPage = () => {
     // <Link to={`/tickets/${t.id}`} state={{ returnTo: location.pathname + location.search }} />
     const location = useLocation();
     const returnTo: string =
-        (location.state && (location.state as any).returnTo) || "/pipeline/tickets";
+        (location.state && (location.state as any).returnTo) ||
+        "/pipeline/tickets";
 
     const {
         ticket,
@@ -71,9 +72,13 @@ export const TicketDetailsPage = () => {
         errorComment,
     } = useTicketDetailsActions(ticketIdNum, returnTo);
 
-    // For closing the assignee dropdown when clicking outside
+    // ref for the assignee dropdown wrapper so we can close it on outside click
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+    // ref for the update form so "Save Changes" in header can submit it
+    const updateFormRef = useRef<HTMLFormElement | null>(null);
+
+    // click outside of assignee dropdown -> hide dropdown
     useEffect(() => {
         function handleDocClick(e: MouseEvent) {
             if (!showUserDropdown) return;
@@ -132,45 +137,59 @@ export const TicketDetailsPage = () => {
             <div className="ticket-card">
                 <div className="ticket-header">
                     <div className="ticket-header-main">
+                        {/* ACTIONS (top right in header) */}
+                        <div className="d-flex justify-content-between align-items-start flex-nowrap w-100 mb-2">
+                            {/* LEFT: created/updated */}
+                            <div className="d-flex flex-column text-muted small me-3">
+                                <small>
+                                    <strong>Created:</strong> {createdAt}
+                                </small>
+                                <small>
+                                    <strong>Updated:</strong> {updatedAt}
+                                </small>
+                            </div>
 
-                        {/* Top Right Actions */}
-                        <div className="d-flex gap-2">
-                            {/* CLOSE */}
-                            <button
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={handleClose}
-                                disabled={loadingTicket}
-                                type="button"
-                            >
-                                Close
-                            </button>
+                            {/* RIGHT: buttons */}
+                            <div className="d-flex gap-2">
 
-                            {/* SAVE CHANGES */}
-                            <button
-                                type="button"
-                                className="btn btn-primary btn-sm"
-                                disabled={savingTicket}
-                                onClick={() =>
-                                    handleSaveTicket({
-                                        status: editStatus,
-                                        assigneeId: editAssigneeId,
-                                    })
-                                }
-                                title="Save and return to tickets list"
-                            >
-                                {savingTicket ? "Saving…" : "Save Changes"}
-                            </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary btn-sm"
+                                    disabled={savingTicket}
+                                    onClick={() => {
+                                        if (updateFormRef.current) {
+                                            updateFormRef.current.requestSubmit();
+                                        }
+                                    }}
+                                    title="Save and return to tickets list"
+                                >
+                                    {savingTicket ? "Saving…" : "Save Changes"}
+                                </button>
+
+                                <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={handleClose}
+                                    disabled={loadingTicket || savingTicket || postingComment}
+                                    type="button"
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
-                        <h3 className="ticket-title mt-3">{ticket.title || "(Untitled)"}</h3>
+                        <h3 className="ticket-title mt-3">
+                            {ticket.title || "(Untitled)"}
+                        </h3>
 
-                        <div className="ticket-meta-line">
+                        <div className="ticket-meta-line mb-2">
                           <span className="badge border">
                             Status: {ticket.status ?? "UNKNOWN"}
                           </span>
-                          <span className="badge border">
+
+                            <span className="badge border">
                             Priority: {ticket.priority ?? "N/A"}
                           </span>
-                          <span className="badge border">
+
+                            <span className="badge border">
                             Reporter:&nbsp;
                                 {ticket.reporterUsername
                                     ? `${ticket.reporterUsername} (${ticket.reporterId ?? "?"})`
@@ -178,8 +197,9 @@ export const TicketDetailsPage = () => {
                                         ? `(${ticket.reporterId})`
                                         : "Unknown"}
                           </span>
-                          <span className="badge border">
-                                Assignee:&nbsp;
+
+                            <span className="badge border">
+                            Assignee:&nbsp;
                                 {ticket.assigneeUsername
                                     ? `${ticket.assigneeUsername} (${ticket.assigneeId ?? "?"})`
                                     : ticket.assigneeId != null
@@ -189,14 +209,7 @@ export const TicketDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="ticket-header-times">
-                        <small>
-                            <strong>Created:</strong> {createdAt}
-                        </small>
-                        <small>
-                            <strong>Updated:</strong> {updatedAt}
-                        </small>
-                    </div>
+
                 </div>
 
                 {/* DESCRIPTION + UPDATE FORM */}
@@ -211,6 +224,7 @@ export const TicketDetailsPage = () => {
 
                     {/* UPDATE TICKET FORM */}
                     <form
+                        ref={updateFormRef}
                         className="ticket-update-form p-3 mb-3"
                         onSubmit={handleUpdateSubmit}
                     >
@@ -299,7 +313,7 @@ export const TicketDetailsPage = () => {
                                                     className="list-group-item list-group-item-action"
                                                     role="button"
                                                     onMouseDown={(evt) => {
-                                                        // prevent blur before click fires
+                                                        // prevent blur from killing click
                                                         evt.preventDefault();
                                                         if (u.id != null && u.username) {
                                                             handlePickAssignee(u.id, u.username);
