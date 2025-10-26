@@ -20,7 +20,7 @@ type FormErrors = {
     priority?: string;
 };
 
-export const NewTicketPage: React.FC = () => {
+export const NewTicketPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 

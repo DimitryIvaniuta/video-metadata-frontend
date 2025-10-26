@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import {useParams, useLocation, useNavigate} from "react-router-dom";
 
 import { TicketStatus } from "@/graphql/generated/graphql";
 import {
@@ -28,7 +28,7 @@ function toErrorMessage(err: unknown): string {
     }
 }
 
-export const TicketDetailsPage: React.FC = () => {
+export const TicketDetailsPage = () => {
     const { ticketId } = useParams<{ ticketId: string }>();
     const ticketIdNum = ticketId ? Number(ticketId) : NaN;
 
@@ -132,33 +132,29 @@ export const TicketDetailsPage: React.FC = () => {
                 <div className="ticket-header">
                     <div className="ticket-header-main">
                         <h3 className="ticket-title">{ticket.title || "(Untitled)"}</h3>
-
                         <div className="ticket-meta-line">
-              <span className="badge bg-light border">
-                Status: {ticket.status ?? "UNKNOWN"}
-              </span>
-
-                            <span className="badge bg-light border">
-                Priority: {ticket.priority ?? "N/A"}
-              </span>
-
-                            <span className="badge bg-light border">
-                Reporter:&nbsp;
+                          <span className="badge border">
+                            Status: {ticket.status ?? "UNKNOWN"}
+                          </span>
+                          <span className="badge border">
+                            Priority: {ticket.priority ?? "N/A"}
+                          </span>
+                          <span className="badge border">
+                            Reporter:&nbsp;
                                 {ticket.reporterUsername
                                     ? `${ticket.reporterUsername} (${ticket.reporterId ?? "?"})`
                                     : ticket.reporterId != null
                                         ? `(${ticket.reporterId})`
                                         : "Unknown"}
-              </span>
-
-                            <span className="badge bg-light border">
-                Assignee:&nbsp;
+                          </span>
+                          <span className="badge border">
+                                Assignee:&nbsp;
                                 {ticket.assigneeUsername
                                     ? `${ticket.assigneeUsername} (${ticket.assigneeId ?? "?"})`
                                     : ticket.assigneeId != null
                                         ? `(${ticket.assigneeId})`
                                         : "Unassigned"}
-              </span>
+                          </span>
                         </div>
                     </div>
 
@@ -332,7 +328,7 @@ export const TicketDetailsPage: React.FC = () => {
                     {comments.map((c: TicketCommentItem) => (
                         <div key={c.id ?? Math.random()} className="ticket-comment-row">
                             <div className="ticket-comment-meta">
-                <span className="badge bg-light border me-2">
+                <span className="badge border me-2">
                   Author:&nbsp;
                     {c.authorUsername
                         ? `${c.authorUsername} (${c.authorId ?? "?"})`

@@ -272,6 +272,7 @@ export function useTicketDetailsActions(
         })
             .then(() => {
                 // go back to ticket list, preserving filters
+                console.log('Ticket created: ' + returnTo);
                 navigate(returnTo, { replace: true });
             })
             .catch(() => {
