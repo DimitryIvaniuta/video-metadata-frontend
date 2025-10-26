@@ -1,112 +1,137 @@
 import React, { FormEvent, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     TicketPriority,
+    TicketPriority as TicketPriorityEnum,
     useCreateTicketMutation,
 } from "@/graphql/generated/graphql";
+
 import "./NewTicketPage.scss";
 
-type TicketFormState = {
+type FormState = {
     title: string;
     description: string;
     priority: TicketPriority;
 };
 
-type TicketFormErrors = {
+type FormErrors = {
     title?: string;
+    description?: string;
+    priority?: string;
 };
 
-type NewTicketPageProps = {
-    onCreated?: () => void;
-};
+export const NewTicketPage: React.FC = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
 
-const priorities: TicketPriority[] = Object.values(TicketPriority).filter(
-    (p): p is TicketPriority => true,
-);
+    // where to go back after success
+    const returnTo: string =
+        (location.state && (location.state as any).returnTo) || "/tickets";
 
-const formatPriority = (p: TicketPriority): string => {
-    const lower = p.toLowerCase();
-    return lower.charAt(0).toUpperCase() + lower.slice(1);
-};
-
-export const NewTicketPage: React.FC<NewTicketPageProps> = ({ onCreated }) => {
-    const [form, setForm] = useState<TicketFormState>({
+    const [form, setForm] = useState<FormState>({
         title: "",
         description: "",
-        priority: TicketPriority.Medium,
+        priority: TicketPriorityEnum.Medium,
     });
 
-    const [errors, setErrors] = useState<TicketFormErrors>({});
+    const [errors, setErrors] = useState<FormErrors>({});
 
-    const [createTicket, { data, loading, error }] = useCreateTicketMutation({
-        refetchQueries: ["TicketsConnection"],
+    const [createTicket, { loading, error }] = useCreateTicketMutation({
+        // still refetch so list is hot when we go back
+        refetchQueries: ["TicketsConnection", "TicketsCount"],
         awaitRefetchQueries: true,
     });
 
-    const validate = (values: TicketFormState): TicketFormErrors => {
-        const errs: TicketFormErrors = {};
+    // client-side validation
+    const validate = (values: FormState): FormErrors => {
+        const errs: FormErrors = {};
         if (!values.title.trim()) {
             errs.title = "Title is required.";
+        }
+        if (!values.description.trim()) {
+            errs.description = "Description is required.";
+        }
+        if (
+            !values.priority ||
+            !Object.values(TicketPriorityEnum).includes(values.priority)
+        ) {
+            errs.priority = "Please select a valid priority.";
         }
         return errs;
     };
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
     ) => {
         const { name, value } = e.target;
         setForm((f) => ({
             ...f,
             [name]:
                 name === "priority"
-                    ? (value as TicketPriority)
+                    ? (value as TicketPriorityEnum)
                     : value,
         }));
         setErrors((prev) => ({ ...prev, [name]: undefined }));
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    /**
+     * Generic helper that:
+     *  - inspects mutation result,
+     *  - optionally logs/telemetry,
+     *  - then routes back to ticket list.
+     *
+     * You can extend this later (toast "Ticket #123 created", etc.)
+     */
+    const handleMutationResult = (result: any) => {
+        // OPTIONAL: pull new ticket id for analytics/telemetry
+        const newId = result?.data?.createTicket?.id;
+        console.debug("Ticket created:", newId);
+
+        // In a real product you'd fire a toast here, or
+        // push to an audit log service, etc.
+
+        // Navigate back to where user came from
+        navigate(returnTo, { replace: true });
+    };
+
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
         const fieldErrors = validate(form);
-        if (Object.keys(fieldErrors).length) {
+        if (Object.keys(fieldErrors).length > 0) {
             setErrors(fieldErrors);
             return;
         }
 
-        try {
-            await createTicket({
-                variables: {
-                    input: {
-                        title: form.title,
-                        description: form.description,
-                        priority: form.priority,
-                    },
+        // fire mutation
+        createTicket({
+            variables: {
+                input: {
+                    title: form.title.trim(),
+                    description: form.description.trim(),
+                    priority: form.priority,
                 },
+            },
+        })
+            .then(handleMutationResult)
+            .catch(() => {
+                // GraphQL error already exposed via `error`
+                // but we intentionally swallow here so we don't blow up the UI
             });
-
-            onCreated?.();
-
-            // reset form after success
-            setForm({
-                title: "",
-                description: "",
-                priority: TicketPriority.Medium,
-            });
-        } catch {
-            // GraphQL error exposed via `error`
-        }
     };
 
     return (
         <div className="new-ticket-container">
             <div>
-                <h2 className="new-ticket-card">Create Support Ticket</h2>
+                <h2 className="new-ticket-card">Create New Ticket</h2>
 
                 <form onSubmit={handleSubmit} className="new-ticket-form">
                     {/* Title */}
                     <div className="ticket-input">
                         <label htmlFor="title" className="form-label">
-                            Title <span className="text-danger">*</span>
+                            Title
                         </label>
                         <input
                             id="title"
@@ -114,12 +139,12 @@ export const NewTicketPage: React.FC<NewTicketPageProps> = ({ onCreated }) => {
                             type="text"
                             value={form.title}
                             onChange={handleChange}
-                            className={`form-input ${errors.title ? "error" : ""}`}
-                            placeholder="Short summary of the problem"
                             disabled={loading}
+                            className={`form-input ${errors.title ? "error" : ""}`}
+                            placeholder={`Short summary (e.g. "Player crashes on MKV")`}
                         />
                         {errors.title && (
-                            <p className="mt-1 text-sm text-danger">{errors.title}</p>
+                            <p className="text-danger text-sm">{errors.title}</p>
                         )}
                     </div>
 
@@ -131,13 +156,19 @@ export const NewTicketPage: React.FC<NewTicketPageProps> = ({ onCreated }) => {
                         <textarea
                             id="description"
                             name="description"
-                            rows={3}
                             value={form.description}
                             onChange={handleChange}
-                            className="form-textarea"
-                            placeholder="Steps to reproduce, expected vs actual, etc."
                             disabled={loading}
+                            className={`form-textarea ${
+                                errors.description ? "error" : ""
+                            }`}
+                            placeholder="Steps to reproduce, expected vs actual behavior…"
                         />
+                        {errors.description && (
+                            <p className="text-danger text-sm">
+                                {errors.description}
+                            </p>
+                        )}
                     </div>
 
                     {/* Priority */}
@@ -150,20 +181,25 @@ export const NewTicketPage: React.FC<NewTicketPageProps> = ({ onCreated }) => {
                             name="priority"
                             value={form.priority}
                             onChange={handleChange}
-                            className="form-select"
                             disabled={loading}
+                            className={`form-select ${errors.priority ? "error" : ""}`}
                         >
-                            {priorities.map((p) => (
+                            {Object.values(TicketPriorityEnum).map((p) => (
                                 <option key={p} value={p}>
-                                    {formatPriority(p)}
+                                    {p.charAt(0) + p.slice(1).toLowerCase()}
                                 </option>
                             ))}
                         </select>
+                        {errors.priority && (
+                            <p className="text-danger text-sm">{errors.priority}</p>
+                        )}
                     </div>
 
                     {/* Server error */}
                     {error && (
-                        <p className="text-center text-sm text-danger">{error.message}</p>
+                        <div className="text-danger text-sm text-center">
+                            {error.message}
+                        </div>
                     )}
 
                     {/* Submit */}
@@ -172,27 +208,9 @@ export const NewTicketPage: React.FC<NewTicketPageProps> = ({ onCreated }) => {
                         disabled={loading}
                         className="btn-create-ticket"
                     >
-                        {loading ? "Submitting…" : "Create Ticket"}
+                        {loading ? "Creating…" : "Create Ticket"}
                     </button>
                 </form>
-
-                {data?.createTicket && (
-                    <div className="ticket-success">
-                        <h3 className="ticket-success-title">Ticket Created!</h3>
-                        <p>
-                            <strong>ID:</strong> {data.createTicket.id}
-                        </p>
-                        <p>
-                            <strong>Title:</strong> {data.createTicket.title}
-                        </p>
-                        <p>
-                            <strong>Status:</strong> {data.createTicket.status}
-                        </p>
-                        <p>
-                            <strong>Priority:</strong> {data.createTicket.priority}
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
     );

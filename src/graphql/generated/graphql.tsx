@@ -141,6 +141,7 @@ export type Query = {
   fxLive?: Maybe<LiveRatesPayload>;
   fxRates?: Maybe<FxRatesPayload>;
   me?: Maybe<UserResponse>;
+  searchUsers?: Maybe<Array<Maybe<UserLite>>>;
   ticket?: Maybe<TicketNode>;
   user?: Maybe<UserResponse>;
   userslist?: Maybe<Array<Maybe<UserResponse>>>;
@@ -202,6 +203,12 @@ export type QueryFxLiveArgs = {
 export type QueryFxRatesArgs = {
   base?: InputMaybe<Scalars['String']['input']>;
   symbols?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QuerySearchUsersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  term?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -312,6 +319,12 @@ export type UserConnection = {
   page?: Maybe<Scalars['Int']['output']>;
   pageSize?: Maybe<Scalars['Int']['output']>;
   total?: Maybe<Scalars['Long']['output']>;
+};
+
+export type UserLite = {
+  __typename?: 'UserLite';
+  id?: Maybe<Scalars['Long']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserResponse = {
@@ -518,6 +531,14 @@ export type ListUsersQueryVariables = Exact<{
 
 
 export type ListUsersQuery = { __typename?: 'Query', userslist?: Array<{ __typename?: 'UserResponse', id?: number | null, username?: string | null, email?: string | null, status?: UserStatus | null, roles?: Array<Role | null> | null } | null> | null };
+
+export type SearchUsersQueryVariables = Exact<{
+  term?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type SearchUsersQuery = { __typename?: 'Query', searchUsers?: Array<{ __typename?: 'UserLite', id?: number | null, username?: string | null } | null> | null };
 
 export type UpdateUserMutationVariables = Exact<{
   input: UpdateUserInput;
@@ -1264,6 +1285,48 @@ export type ListUsersQueryHookResult = ReturnType<typeof useListUsersQuery>;
 export type ListUsersLazyQueryHookResult = ReturnType<typeof useListUsersLazyQuery>;
 export type ListUsersSuspenseQueryHookResult = ReturnType<typeof useListUsersSuspenseQuery>;
 export type ListUsersQueryResult = Apollo.QueryResult<ListUsersQuery, ListUsersQueryVariables>;
+export const SearchUsersDocument = gql`
+    query SearchUsers($term: String, $limit: Int) {
+  searchUsers(term: $term, limit: $limit) {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useSearchUsersQuery__
+ *
+ * To run a query within a React component, call `useSearchUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchUsersQuery({
+ *   variables: {
+ *      term: // value for 'term'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useSearchUsersQuery(baseOptions?: Apollo.QueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+      }
+export function useSearchUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+        }
+export function useSearchUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+        }
+export type SearchUsersQueryHookResult = ReturnType<typeof useSearchUsersQuery>;
+export type SearchUsersLazyQueryHookResult = ReturnType<typeof useSearchUsersLazyQuery>;
+export type SearchUsersSuspenseQueryHookResult = ReturnType<typeof useSearchUsersSuspenseQuery>;
+export type SearchUsersQueryResult = Apollo.QueryResult<SearchUsersQuery, SearchUsersQueryVariables>;
 export const UpdateUserDocument = gql`
     mutation UpdateUser($input: UpdateUserInput!) {
   updateUser(input: $input) {

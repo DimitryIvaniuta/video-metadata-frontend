@@ -1,7 +1,7 @@
 // src/pages/Tickets/TicketsPage.tsx
 import React, { useMemo, useState } from "react";
 import { TicketStatus, useTicketsConnectionQuery } from "@/graphql/generated/graphql";
-import { NavLink } from "react-router-dom";
+import {Link, NavLink, useLocation} from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
@@ -9,6 +9,9 @@ const TicketsPage = () => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<TicketStatus | undefined>(undefined);
+    const location = useLocation();
+
+    const currentListUrl = location.pathname + location.search;
 
     const { data, loading, refetch } = useTicketsConnectionQuery({
         variables: { page, pageSize: PAGE_SIZE, search, status },
@@ -36,13 +39,28 @@ const TicketsPage = () => {
                 <button className="btn btn-outline-primary" onClick={() => refetch({ page: 1, pageSize: PAGE_SIZE, search, status })}>
                     Apply
                 </button>
-                <NavLink to="/tickets/new" className="btn btn-success">New Ticket</NavLink>
+                <Link
+                    to="/tickets/new"
+                    state={{ returnTo: currentListUrl }}
+                    className="btn btn-success"
+                >
+                    New Ticket
+                </Link>
             </div>
 
             <div className="card">
                 <div className="table-responsive">
                     <table className="table table-hover mb-0">
-                        <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Updated</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Assignee</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
                         <tbody>
                         {items.map(t => (
                             <tr key={t!.id}>

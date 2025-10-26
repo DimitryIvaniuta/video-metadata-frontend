@@ -55,7 +55,7 @@ export default function App() {
             <Route path="pipeline/liveRates" element={<LiveRates />} />
             <Route path="pipeline/tickets" element={<TicketsPage />} />
             <Route path="/tickets/new" element={<NewTicketPage />} />
-            <Route path="/tickets/:id" element={<TicketDetailsPage />} />
+            <Route path="/tickets/:ticketId" element={<TicketDetailsPage />} />
             <Route
               path="videos/import/channel"
               element={<ImportChannelPage />}
