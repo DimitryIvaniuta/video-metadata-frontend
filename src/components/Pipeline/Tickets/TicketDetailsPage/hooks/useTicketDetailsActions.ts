@@ -6,24 +6,39 @@ import {
     useUpdateTicketMutation,
     useAddTicketCommentMutation,
     useSearchUsersLazyQuery,
+    TicketByIdQuery,
+    SearchUsersQuery,
 } from "@/graphql/generated/graphql";
 
-type UseTicketDetailsActionsResult = {
+/**
+ * Helper types derived from codegen so we don't guess shapes.
+ */
+
+// One Ticket from TicketByIdQuery["ticket"]
+export type TicketDetails = NonNullable<TicketByIdQuery["ticket"]>;
+
+// One comment item, after filtering out nulls
+export type TicketCommentItem = NonNullable<
+    NonNullable<TicketDetails["comments"]>[number]
+>;
+
+// One user search result item, after filtering out nulls
+export type SearchUserItem = NonNullable<
+    NonNullable<SearchUsersQuery["searchUsers"]>[number]
+>;
+
+export interface UseTicketDetailsActionsResult {
     // ticket query
-    ticket: ReturnType<typeof useTicketByIdQuery>["data"] extends {
-            ticket?: infer T | null;
-        }
-        ? T | null | undefined
-        : any;
+    ticket: TicketDetails | null;
     loadingTicket: boolean;
-    errorTicket: any;
+    errorTicket: unknown;
     refetchTicket: () => Promise<any>;
 
     // editable fields
     status: string;
     setStatus: (v: string) => void;
 
-    assigneeId: string;
+    assigneeId: string; // string-wrapped numeric ID or ""
     assigneeName: string;
     assigneeQuery: string;
     handleAssigneeInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -35,8 +50,7 @@ type UseTicketDetailsActionsResult = {
     setShowUserDropdown: (v: boolean) => void;
 
     // debounced search results
-    userSearchResults: { id?: number | null; username?: string | null }[];
-    runUserSearch: ReturnType<typeof useSearchUsersLazyQuery>[0];
+    userSearchResults: SearchUserItem[];
 
     // comment box
     commentText: string;
@@ -48,10 +62,10 @@ type UseTicketDetailsActionsResult = {
 
     // mutation states / errors
     savingTicket: boolean;
-    errorUpdate: any;
+    errorUpdate: unknown;
     postingComment: boolean;
-    errorComment: any;
-};
+    errorComment: unknown;
+}
 
 export function useTicketDetailsActions(
     ticketIdNum: number,
@@ -76,7 +90,9 @@ export function useTicketDetailsActions(
         fetchPolicy: "cache-and-network",
     });
 
-    const ticket = data?.ticket ?? null;
+    // normalize ticket
+    const rawTicket = data?.ticket ?? null;
+    const ticket: TicketDetails | null = rawTicket ?? null;
 
     const [updateTicket, { loading: savingTicket, error: errorUpdate }] =
         useUpdateTicketMutation({
@@ -98,15 +114,15 @@ export function useTicketDetailsActions(
     // Local editable state
     // -----------------------------
 
-    // status select
+    // status is a string so it binds cleanly with <select />
     const [status, setStatus] = useState<string>("");
 
     // assignee state
-    const [assigneeId, setAssigneeId] = useState<string>(""); // numeric-String or ""
-    const [assigneeName, setAssigneeName] = useState<string>(""); // username
-    const [assigneeQuery, setAssigneeQuery] = useState<string>(""); // input field text
+    const [assigneeId, setAssigneeId] = useState<string>(""); // "42" or ""
+    const [assigneeName, setAssigneeName] = useState<string>(""); // e.g. "alice"
+    const [assigneeQuery, setAssigneeQuery] = useState<string>(""); // text in input
 
-    // dropdown visibility
+    // dropdown visibility for user search
     const [showUserDropdown, setShowUserDropdown] = useState<boolean>(false);
 
     // comment box
@@ -126,14 +142,10 @@ export function useTicketDetailsActions(
         // init assignee/display text
         if (ticket.assigneeId != null) {
             const idStr = String(ticket.assigneeId);
-            const nameStr = ticket.assigneeUsername || "";
+            const nm = ticket.assigneeUsername ?? "";
             setAssigneeId(idStr);
-            setAssigneeName(nameStr);
-            setAssigneeQuery(
-                nameStr
-                    ? `${nameStr} (${idStr})`
-                    : idStr,
-            );
+            setAssigneeName(nm);
+            setAssigneeQuery(nm ? `${nm} (${idStr})` : idStr);
         } else {
             setAssigneeId("");
             setAssigneeName("");
@@ -147,14 +159,15 @@ export function useTicketDetailsActions(
     // Debounced assignee search
     // -----------------------------
     useEffect(() => {
-        // if cleared text → hide
+        // if empty, hide dropdown
         if (!assigneeQuery.trim()) {
             setShowUserDropdown(false);
             return;
         }
 
-        // if it's already a locked selection like "alex (12)",
-        // don't auto-query unless user actually edits it
+        // If assigneeQuery looks like a locked selection `"alice (12)"`,
+        // don't auto-query unless user edits it.
+        // A quick heuristic: ends with ")"
         if (/\)\s*$/.test(assigneeQuery)) {
             return;
         }
@@ -174,18 +187,20 @@ export function useTicketDetailsActions(
         return () => clearTimeout(handle);
     }, [assigneeQuery, runUserSearch]);
 
-    const userSearchResults =
-        userSearchData?.searchUsers ?? [];
+    // flatten + filter nulls from userSearchData
+    const userSearchResults: SearchUserItem[] = (
+        userSearchData?.searchUsers ?? []
+    ).filter((u): u is SearchUserItem => Boolean(u));
 
     // -----------------------------
-    // Handlers
+    // Handlers for assignee search/select
     // -----------------------------
 
     const handleAssigneeInputChange = (
         e: React.ChangeEvent<HTMLInputElement>,
     ) => {
         const value = e.target.value;
-        // user typing -> break current selection
+        // user is typing -> break the "locked" selection
         setAssigneeQuery(value);
         setAssigneeId("");
         setAssigneeName("");
@@ -210,6 +225,9 @@ export function useTicketDetailsActions(
         setShowUserDropdown(false);
     };
 
+    // -----------------------------
+    // Add comment
+    // -----------------------------
     const handleCommentSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!ticketIdNum || Number.isNaN(ticketIdNum)) return;
@@ -224,13 +242,13 @@ export function useTicketDetailsActions(
             },
         })
             .then(() => {
+                // clear comment box
                 setCommentText("");
-                // we do NOT reset status/assignee here,
-                // initializedRef.current stays true so local edits persist
+                // DO NOT reset status/assignee; keep user's in-progress edits
                 return refetch();
             })
             .catch(() => {
-                /* errorComment surfaces in UI */
+                // GraphQL error is surfaced by errorComment
             });
     };
 
@@ -248,12 +266,12 @@ export function useTicketDetailsActions(
                 input: {
                     id: ticketIdNum,
                     status: status === "" ? null : (status as TicketStatus),
-                    assigneeId:
-                        assigneeId === "" ? null : Number(assigneeId),
+                    assigneeId: assigneeId === "" ? null : Number(assigneeId),
                 },
             },
         })
             .then(() => {
+                // go back to ticket list, preserving filters
                 navigate(returnTo, { replace: true });
             })
             .catch(() => {
@@ -281,7 +299,6 @@ export function useTicketDetailsActions(
         setShowUserDropdown,
 
         userSearchResults,
-        runUserSearch,
 
         commentText,
         setCommentText,

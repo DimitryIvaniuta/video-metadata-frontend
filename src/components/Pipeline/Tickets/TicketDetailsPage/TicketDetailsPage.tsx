@@ -2,22 +2,42 @@ import React, { useEffect, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 
 import { TicketStatus } from "@/graphql/generated/graphql";
+import {
+    useTicketDetailsActions,
+    TicketCommentItem,
+    SearchUserItem,
+} from "./hooks/useTicketDetailsActions";
 
 import "./TicketDetailsPage.scss";
-import {useTicketDetailsActions} from "@/components/Pipeline/Tickets/TicketDetailsPage/hooks/useTicketDetailsActions";
+
+/**
+ * Turn any GraphQL/network error into a readable string.
+ */
+function toErrorMessage(err: unknown): string {
+    if (!err) return "";
+    if (typeof err === "string") return err;
+    if (err instanceof Error) return err.message;
+    if (typeof err === "object" && "message" in (err as any)) {
+        const m = (err as any).message;
+        if (typeof m === "string") return m;
+    }
+    try {
+        return JSON.stringify(err);
+    } catch {
+        return String(err);
+    }
+}
 
 export const TicketDetailsPage: React.FC = () => {
     const { ticketId } = useParams<{ ticketId: string }>();
     const ticketIdNum = ticketId ? Number(ticketId) : NaN;
 
-    // We preserve grid context:
-    // Tickets grid should link here like:
+    // Tickets list should navigate here like:
     // <Link to={`/tickets/${t.id}`} state={{ returnTo: location.pathname + location.search }} />
     const location = useLocation();
     const returnTo: string =
         (location.state && (location.state as any).returnTo) || "/tickets";
 
-    // Hook with all ticket logic
     const {
         ticket,
         loadingTicket,
@@ -50,23 +70,30 @@ export const TicketDetailsPage: React.FC = () => {
         errorComment,
     } = useTicketDetailsActions(ticketIdNum, returnTo);
 
-    // dropdownRef for outside-click detection
+    // For closing the assignee dropdown when clicking outside
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         function handleDocClick(e: MouseEvent) {
             if (!showUserDropdown) return;
             if (!dropdownRef.current) return;
-
             if (!dropdownRef.current.contains(e.target as Node)) {
                 setShowUserDropdown(false);
             }
         }
+
         document.addEventListener("mousedown", handleDocClick);
-        return () => document.removeEventListener("mousedown", handleDocClick);
+        return () => {
+            document.removeEventListener("mousedown", handleDocClick);
+        };
     }, [showUserDropdown, setShowUserDropdown]);
 
-    // Handle loading / error / not found states
+    // Normalize human-readable error messages for safe rendering
+    const ticketErrorMsg = errorTicket ? toErrorMessage(errorTicket) : "";
+    const updateErrorMsg = errorUpdate ? toErrorMessage(errorUpdate) : "";
+    const commentErrorMsg = errorComment ? toErrorMessage(errorComment) : "";
+
+    // Loading / not found states
     if (loadingTicket && !ticket) {
         return (
             <div className="ticket-details-container">
@@ -75,17 +102,17 @@ export const TicketDetailsPage: React.FC = () => {
         );
     }
 
-    if (errorTicket || !ticket) {
+    if (ticketErrorMsg || !ticket) {
         return (
             <div className="ticket-details-container">
                 <div className="ticket-card text-danger">
-                    {errorTicket ? String(errorTicket.message || errorTicket) : "Ticket not found"}
+                    {ticketErrorMsg || "Ticket not found"}
                 </div>
             </div>
         );
     }
 
-    // render-friendly timestamps
+    // Render-friendly timestamps
     const createdAt = ticket.createdAt
         ? new Date(ticket.createdAt).toLocaleString()
         : "—";
@@ -93,7 +120,10 @@ export const TicketDetailsPage: React.FC = () => {
         ? new Date(ticket.updatedAt).toLocaleString()
         : "—";
 
-    const comments = ticket.comments ?? [];
+    // Comments array, filtered to non-null and typed
+    const comments: TicketCommentItem[] = (ticket.comments ?? []).filter(
+        (c): c is TicketCommentItem => Boolean(c),
+    );
 
     return (
         <div className="ticket-details-container">
@@ -159,10 +189,8 @@ export const TicketDetailsPage: React.FC = () => {
                     >
                         <h6>Edit Ticket</h6>
 
-                        {errorUpdate && (
-                            <div className="alert alert-danger">
-                                {String(errorUpdate.message || errorUpdate)}
-                            </div>
+                        {updateErrorMsg && (
+                            <div className="alert alert-danger">{updateErrorMsg}</div>
                         )}
 
                         <div className="row g-3">
@@ -178,11 +206,13 @@ export const TicketDetailsPage: React.FC = () => {
                                     disabled={savingTicket}
                                     onChange={(e) => setStatus(e.target.value)}
                                 >
-                                    {Object.values(TicketStatus).map((st) => (
-                                        <option key={st} value={st}>
-                                            {st.charAt(0) + st.slice(1).toLowerCase()}
-                                        </option>
-                                    ))}
+                                    {(Object.values(TicketStatus) as TicketStatus[]).map(
+                                        (st: TicketStatus) => (
+                                            <option key={st} value={st}>
+                                                {st.charAt(0) + st.slice(1).toLowerCase()}
+                                            </option>
+                                        ),
+                                    )}
                                 </select>
                             </div>
 
@@ -215,10 +245,7 @@ export const TicketDetailsPage: React.FC = () => {
                                                 type="button"
                                                 className="btn btn-outline-secondary ms-2"
                                                 disabled={savingTicket}
-                                                onClick={() => {
-                                                    // clear selection
-                                                    handleClearAssignee();
-                                                }}
+                                                onClick={handleClearAssignee}
                                                 title="Clear assignee"
                                             >
                                                 ×
@@ -239,29 +266,27 @@ export const TicketDetailsPage: React.FC = () => {
                                                 overflowY: "auto",
                                             }}
                                         >
-                                            {userSearchResults.map((u) =>
-                                                u ? (
-                                                    <li
-                                                        key={u.id ?? "unknown"}
-                                                        className="list-group-item list-group-item-action"
-                                                        role="button"
-                                                        onMouseDown={(e) => {
-                                                            // prevent blur/close before click
-                                                            e.preventDefault();
-                                                            if (u.id != null && u.username) {
-                                                                handlePickAssignee(u.id, u.username);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <div className="fw-semibold">
-                                                            {u.username ?? "(no username)"}
-                                                        </div>
-                                                        <div className="text-muted small">
-                                                            ID: {u.id ?? "?"}
-                                                        </div>
-                                                    </li>
-                                                ) : null,
-                                            )}
+                                            {userSearchResults.map((u: SearchUserItem) => (
+                                                <li
+                                                    key={u.id ?? "unknown"}
+                                                    className="list-group-item list-group-item-action"
+                                                    role="button"
+                                                    onMouseDown={(evt) => {
+                                                        // prevent blur before click fires
+                                                        evt.preventDefault();
+                                                        if (u.id != null && u.username) {
+                                                            handlePickAssignee(u.id, u.username);
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="fw-semibold">
+                                                        {u.username ?? "(no username)"}
+                                                    </div>
+                                                    <div className="text-muted small">
+                                                        ID: {u.id ?? "?"}
+                                                    </div>
+                                                </li>
+                                            ))}
                                         </ul>
                                     )}
 
@@ -301,46 +326,37 @@ export const TicketDetailsPage: React.FC = () => {
 
                 <div className="ticket-comments-body">
                     {comments.length === 0 && (
-                        <div className="fst-italic text-muted">
-                            No comments yet.
-                        </div>
+                        <div className="fst-italic text-muted">No comments yet.</div>
                     )}
 
-                    {comments.map((c) =>
-                            c ? (
-                                <div
-                                    key={c.id ?? Math.random()}
-                                    className="ticket-comment-row"
-                                >
-                                    <div className="ticket-comment-meta">
-                  <span className="badge">
-                    Author:&nbsp;
-                      {c.authorUsername
-                          ? `${c.authorUsername} (${c.authorId ?? "?"})`
-                          : c.authorId != null
-                              ? `(${c.authorId})`
-                              : "Unknown"}
-                  </span>
-                                        <small>
-                                            {c.createdAt
-                                                ? new Date(c.createdAt).toLocaleString()
-                                                : ""}
-                                        </small>
-                                    </div>
-                                    <p className="ticket-comment-body">{c.body}</p>
-                                </div>
-                            ) : null,
-                    )}
+                    {comments.map((c: TicketCommentItem) => (
+                        <div key={c.id ?? Math.random()} className="ticket-comment-row">
+                            <div className="ticket-comment-meta">
+                <span className="badge bg-light border me-2">
+                  Author:&nbsp;
+                    {c.authorUsername
+                        ? `${c.authorUsername} (${c.authorId ?? "?"})`
+                        : c.authorId != null
+                            ? `(${c.authorId})`
+                            : "Unknown"}
+                </span>
+                                <small>
+                                    {c.createdAt
+                                        ? new Date(c.createdAt).toLocaleString()
+                                        : ""}
+                                </small>
+                            </div>
+                            <p className="ticket-comment-body">{c.body}</p>
+                        </div>
+                    ))}
 
                     {/* ADD COMMENT */}
                     <form
                         className="ticket-comment-form mt-4"
                         onSubmit={handleCommentSubmit}
                     >
-                        {errorComment && (
-                            <div className="alert alert-danger">
-                                {String(errorComment.message || errorComment)}
-                            </div>
+                        {commentErrorMsg && (
+                            <div className="alert alert-danger">{commentErrorMsg}</div>
                         )}
 
                         <div className="input-group">
@@ -355,9 +371,7 @@ export const TicketDetailsPage: React.FC = () => {
                             />
                             <button
                                 className="btn btn-outline-primary"
-                                disabled={
-                                    postingComment || !commentText.trim()
-                                }
+                                disabled={postingComment || !commentText.trim()}
                                 title="Add comment"
                             >
                                 {postingComment ? "Posting…" : "Comment"}
