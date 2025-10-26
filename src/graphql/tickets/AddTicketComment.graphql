@@ -2,6 +2,7 @@ mutation AddTicketComment($input: TicketCommentInput!) {
     addTicketComment(input: $input) {
         id
         authorId
+        authorUsername
         body
         createdAt
     }

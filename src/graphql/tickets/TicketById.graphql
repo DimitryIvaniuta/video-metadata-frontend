@@ -6,12 +6,15 @@ query TicketById($id: Long!, $includeComments: Boolean! = true) {
         status
         priority
         reporterId
+        reporterUsername
         assigneeId
+        assigneeUsername
         createdAt
         updatedAt
         comments @include(if: $includeComments) {
             id
             authorId
+            authorUsername
             body
             createdAt
         }

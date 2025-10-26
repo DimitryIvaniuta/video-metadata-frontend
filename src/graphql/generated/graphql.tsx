@@ -247,6 +247,7 @@ export type TicketCommentInput = {
 export type TicketCommentNode = {
   __typename?: 'TicketCommentNode';
   authorId?: Maybe<Scalars['Long']['output']>;
+  authorUsername?: Maybe<Scalars['String']['output']>;
   body?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['Long']['output']>;
@@ -269,12 +270,14 @@ export type TicketCreateInput = {
 export type TicketNode = {
   __typename?: 'TicketNode';
   assigneeId?: Maybe<Scalars['Long']['output']>;
+  assigneeUsername?: Maybe<Scalars['String']['output']>;
   comments?: Maybe<Array<Maybe<TicketCommentNode>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Long']['output']>;
   priority?: Maybe<TicketPriority>;
   reporterId?: Maybe<Scalars['Long']['output']>;
+  reporterUsername?: Maybe<Scalars['String']['output']>;
   status?: Maybe<TicketStatus>;
   title?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -444,7 +447,7 @@ export type AddTicketCommentMutationVariables = Exact<{
 }>;
 
 
-export type AddTicketCommentMutation = { __typename?: 'Mutation', addTicketComment?: { __typename?: 'TicketCommentNode', id?: number | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null };
+export type AddTicketCommentMutation = { __typename?: 'Mutation', addTicketComment?: { __typename?: 'TicketCommentNode', id?: number | null, authorId?: number | null, authorUsername?: string | null, body?: string | null, createdAt?: string | null } | null };
 
 export type CreateTicketMutationVariables = Exact<{
   input: TicketCreateInput;
@@ -459,7 +462,7 @@ export type TicketByIdQueryVariables = Exact<{
 }>;
 
 
-export type TicketByIdQuery = { __typename?: 'Query', ticket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, description?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, assigneeId?: number | null, createdAt?: string | null, updatedAt?: string | null, comments?: Array<{ __typename?: 'TicketCommentNode', id?: number | null, authorId?: number | null, body?: string | null, createdAt?: string | null } | null> | null } | null };
+export type TicketByIdQuery = { __typename?: 'Query', ticket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, description?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, reporterId?: number | null, reporterUsername?: string | null, assigneeId?: number | null, assigneeUsername?: string | null, createdAt?: string | null, updatedAt?: string | null, comments?: Array<{ __typename?: 'TicketCommentNode', id?: number | null, authorId?: number | null, authorUsername?: string | null, body?: string | null, createdAt?: string | null } | null> | null } | null };
 
 export type TicketsConnectionQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -478,7 +481,7 @@ export type UpdateTicketMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTicketMutation = { __typename?: 'Mutation', updateTicket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, assigneeId?: number | null, updatedAt?: string | null } | null };
+export type UpdateTicketMutation = { __typename?: 'Mutation', updateTicket?: { __typename?: 'TicketNode', id?: number | null, title?: string | null, status?: TicketStatus | null, priority?: TicketPriority | null, assigneeId?: number | null, assigneeUsername?: string | null, updatedAt?: string | null } | null };
 
 export type ConnectionUsersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -751,6 +754,7 @@ export const AddTicketCommentDocument = gql`
   addTicketComment(input: $input) {
     id
     authorId
+    authorUsername
     body
     createdAt
   }
@@ -831,12 +835,15 @@ export const TicketByIdDocument = gql`
     status
     priority
     reporterId
+    reporterUsername
     assigneeId
+    assigneeUsername
     createdAt
     updatedAt
     comments @include(if: $includeComments) {
       id
       authorId
+      authorUsername
       body
       createdAt
     }
@@ -949,6 +956,7 @@ export const UpdateTicketDocument = gql`
     status
     priority
     assigneeId
+    assigneeUsername
     updatedAt
   }
 }

@@ -1422,6 +1422,18 @@
             "deprecationReason": null
           },
           {
+            "name": "authorUsername",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "body",
             "description": null,
             "args": [],
@@ -1594,6 +1606,18 @@
             "deprecationReason": null
           },
           {
+            "name": "assigneeUsername",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "comments",
             "description": null,
             "args": [],
@@ -1664,6 +1688,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Long",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reporterUsername",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,

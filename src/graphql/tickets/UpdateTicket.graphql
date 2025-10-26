@@ -5,6 +5,7 @@ mutation UpdateTicket($input: TicketUpdateInput!) {
         status
         priority
         assigneeId
+        assigneeUsername
         updatedAt
     }
 }
